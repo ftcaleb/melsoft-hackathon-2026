@@ -1,0 +1,193 @@
+/* Shared by agenda.html, judges.html and needed.html.
+ *
+ * These pages are part of the landing page (index.html), so they reuse its
+ * design system as-is: the cz-* classes below are copied from the landing
+ * page's stylesheet (navbar, wrap, buttons, cards, grid background), and the
+ * page-specific parts use the same colours, type scale and radii.
+ */
+
+/* ── From the landing page ────────────────────────────────────────────── */
+
+body{margin:0;background:#ffffff;color:#0a1733;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:'cv11','ss01'}
+*{box-sizing:border-box}
+a{color:#5e0743}a:hover{color:#0a1733}
+h1,h2,h3{font-family:'Inter',system-ui,sans-serif;letter-spacing:-0.035em}
+section[id]{scroll-margin-top:110px}
+.cz-wrap{width:100%;max-width:1680px;margin:0 auto;padding-inline:max(clamp(24px,8vw,160px),env(safe-area-inset-left),env(safe-area-inset-right))}
+.cz-mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.cz-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 24px;border-radius:999px;font-weight:600;font-size:16px;text-decoration:none;cursor:pointer;border:1px solid transparent;transition:transform .2s ease,background-color .2s ease,box-shadow .2s ease,color .2s ease}
+.cz-btn:hover{transform:translateY(-1px)}
+.cz-btn:active{transform:scale(.98)}
+.cz-btn:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid #5e0743;outline-offset:3px}
+.cz-btn-primary{background:#0a1733;color:#ffffff}
+.cz-btn-primary:hover{background:#13285a;color:#ffffff;box-shadow:0 10px 30px -10px rgba(10,23,51,.55)}
+.cz-btn-ghost{background:transparent;color:#0a1733;border-color:#cdd5e5}
+.cz-btn-ghost:hover{border-color:#0a1733;color:#0a1733}
+.cz-btn-light{background:#ffffff;color:#0a1733}
+.cz-btn-light:hover{background:#f7e9f2;color:#0a1733}
+.cz-nav a.cz-link{color:#0a1733;text-decoration:none;font-size:15px;font-weight:500;padding:8px 4px}
+.cz-nav a.cz-link:hover{color:#5e0743}
+.cz-grid-bg{isolation:isolate}
+.cz-grid-bg::before{content:"";position:absolute;inset:-104px 0 0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(10,23,51,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(10,23,51,.08) 1px,transparent 1px);background-size:56px 56px;background-position:center top;-webkit-mask-image:radial-gradient(ellipse 80% 75% at 50% 40%,#000 30%,transparent 100%);mask-image:radial-gradient(ellipse 80% 75% at 50% 40%,#000 30%,transparent 100%)}
+.cz-card{background:#ffffff;border:1px solid #e3e8f2;border-radius:20px;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+.cz-card:hover{transform:translateY(-3px);border-color:#b9c6e2;box-shadow:0 18px 40px -24px rgba(10,23,51,.35)}
+@media (max-width: 760px){
+.cz-hide-sm{display:none !important}
+.cz-bar{flex-wrap:nowrap !important;padding:8px 10px 8px 22px !important}
+.cz-bar img{height:28px !important}
+}
+@media (prefers-reduced-motion: reduce){
+*,*::before,*::after{animation:none !important;transition:none !important}
+}
+
+/* ── Shared by the three pages ────────────────────────────────────────── */
+
+/* The page you are on, in the navbar. */
+.cz-nav a.cz-link[aria-current="page"]{color:#5e0743;font-weight:600;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:8px}
+
+/* Clears the fixed navbar, as on the landing page. */
+.page{width:100%;overflow-x:clip;padding-top:104px}
+
+/* Page heading: the landing page's section heading, one size up. */
+.page-head{position:relative;padding:clamp(24px,4vw,64px) 0 clamp(40px,5vw,72px)}
+.page-head .cz-wrap{display:flex;flex-direction:column;gap:18px}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#5e0743}
+.page-head h1{margin:0;font-size:clamp(38px,5.6vw,76px);line-height:.98;font-weight:700;max-width:16ch}
+.page-head h1 span{color:#5e0743}
+.page-head .lede{margin:0;font-size:clamp(17px,1.5vw,20px);line-height:1.6;color:#34405e;max-width:640px}
+.page-head .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+
+/* Key facts strip, as under the landing page hero. */
+.facts{display:flex;flex-wrap:wrap;margin-top:10px;border:1px solid #e3e8f2;border-radius:24px;background:#ffffff;overflow:hidden}
+.facts div{flex:1 1 0;min-width:200px;padding:20px 26px;display:flex;flex-direction:column;gap:4px}
+.facts div+div{border-left:1px solid #e3e8f2}
+.facts i{font-style:normal;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#4a5675}
+.facts b{font-size:19px;font-weight:700;letter-spacing:-.01em}
+@media (max-width: 760px){
+.facts div{flex-basis:100%;padding:16px 20px}
+.facts div+div{border-left:0;border-top:1px solid #e3e8f2}
+}
+
+/* A tinted band, like the landing page's agenda section. */
+.band-section{padding:clamp(48px,6vw,88px) 0;background:#f6f8fc;border-top:1px solid #e9edf5;border-bottom:1px solid #e9edf5}
+.plain-section{padding:clamp(48px,6vw,88px) 0}
+
+/* Section heading inside a page. */
+.sec-head{display:flex;flex-direction:column;gap:14px;max-width:720px;margin-bottom:36px}
+.sec-head h2{margin:0;font-size:clamp(30px,3.6vw,46px);line-height:1.05}
+.sec-head p{margin:0;font-size:18px;line-height:1.65;color:#34405e}
+
+/* "Online" style pill. */
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:#f7e9f2;color:#5e0743;font-size:13px;font-weight:600;white-space:nowrap}
+
+/* Footer: navy, laid out like melsoftacademy.com's footer. */
+.cz-foot{background:#0a1733;color:#ffffff}
+.cz-foot .cz-wrap{padding-top:clamp(56px,7vw,100px);padding-bottom:40px}
+.cz-foot a:focus-visible{outline-color:#eab0d4}
+.cz-foot-cta{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:28px;padding-bottom:clamp(40px,5vw,64px);margin-bottom:clamp(40px,5vw,64px);border-bottom:1px solid rgba(255,255,255,.12)}
+.cz-foot-cta h2{margin:0;font-size:clamp(30px,4vw,52px);line-height:1.05;color:#ffffff;max-width:720px}
+.cz-foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1.1fr 1.2fr;gap:48px}
+.cz-foot-brand img{display:block;height:64px;width:auto}
+.cz-foot-brand p{margin:22px 0 0;font-size:15px;line-height:1.65;color:rgba(255,255,255,.72);max-width:320px}
+.cz-foot-social{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.cz-foot-social a{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.08);display:grid;place-items:center;color:rgba(255,255,255,.85);transition:background-color .2s ease,color .2s ease}
+.cz-foot-social a:hover{background:rgba(255,255,255,.16);color:#ffffff}
+.cz-foot h2.cz-foot-h{margin:0;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.cz-foot ul{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.cz-foot-links a{color:#ffffff;font-size:15px;font-weight:500;text-decoration:none}
+.cz-foot-links a:hover{color:#eab0d4}
+.cz-foot-dates li{display:flex;flex-direction:column;gap:2px}
+.cz-foot-dates .when{font-size:12.5px;color:#eab0d4}
+.cz-foot-dates .what{font-size:15px;font-weight:500;color:#ffffff}
+.cz-foot-contact{margin-top:18px;display:flex;flex-direction:column;gap:14px;font-size:15px;line-height:1.5;color:rgba(255,255,255,.75)}
+.cz-foot-contact a,.cz-foot-contact div{display:flex;align-items:flex-start;gap:10px;color:rgba(255,255,255,.75);text-decoration:none}
+.cz-foot-contact a:hover{color:#ffffff}
+.cz-foot-contact svg{flex:none;margin-top:2px}
+.cz-foot-contact strong{color:rgba(255,255,255,.92);font-weight:600}
+.cz-foot-bottom{margin-top:clamp(48px,6vw,72px);padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px 24px;color:rgba(255,255,255,.55);font-size:13px}
+.cz-foot-bottom a{color:rgba(255,255,255,.7);text-decoration:none}
+.cz-foot-bottom a:hover{color:#ffffff}
+@media (max-width: 1000px){
+.cz-foot-grid{grid-template-columns:1fr 1fr;gap:40px}
+}
+@media (max-width: 600px){
+.cz-foot-grid{grid-template-columns:1fr;gap:36px}
+}
+
+/* ── Judges: one card, the five judges in an even row ─────────────────── */
+/* Same as the landing page's judges section. There each judge is a link to
+   this page; here each is a button that opens the bio. */
+
+.cz-judges{padding:clamp(28px,4vw,48px) clamp(16px,3vw,40px)}
+.cz-judges:hover{transform:none}
+.cz-judges-label{display:block;text-align:center;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#4a5675}
+.cz-judges-row{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.cz-judges-row li{display:flex}
+.cz-judges-row li+li{border-left:1px solid #e3e8f2}
+.cz-judges-row a,.cz-judges-row button{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 16px;text-decoration:none;color:#0a1733;appearance:none;border:0;background:none;font:inherit;cursor:pointer}
+.cz-judges-row img{display:block;width:104px;height:104px;border-radius:50%;object-fit:cover;background:#eef1f7;border:4px solid #ffffff;box-shadow:0 0 0 1px #e3e8f2,0 14px 28px -18px rgba(10,23,51,.5);transition:transform .25s ease}
+.cz-judges-row a:hover img,.cz-judges-row button:hover img{transform:translateY(-3px)}
+.cz-judges-row a:hover .cz-jname,.cz-judges-row button:hover .cz-jname{color:#5e0743}
+.cz-jname{margin-top:18px;font-size:17px;font-weight:700;letter-spacing:-.02em;line-height:1.25}
+.cz-jrole{margin-top:6px;font-size:14px;font-weight:600;line-height:1.4;color:#5e0743}
+.cz-jmore{margin-top:12px;font-size:13.5px;font-weight:600;color:#0a1733}
+.cz-judges-row button:hover .cz-jmore{color:#5e0743}
+@media (max-width: 1100px){
+.cz-judges-row{display:flex;flex-wrap:wrap;justify-content:center;row-gap:32px}
+.cz-judges-row li{flex:0 0 33.333%}
+.cz-judges-row li+li{border-left:0}
+}
+@media (max-width: 600px){
+.cz-judges-row{row-gap:28px}
+.cz-judges-row li{flex-basis:50%}
+.cz-judges-label{font-size:11px;letter-spacing:.12em}
+.cz-judges-row a,.cz-judges-row button{padding:4px 8px}
+.cz-judges-row img{width:88px;height:88px}
+.cz-jname{font-size:16px}
+.cz-jrole{font-size:13px}
+}
+
+/* ── Avatars, chips and the judge bio sheet ───────────────────────────── */
+
+.av{flex:none;display:flex;align-items:center;justify-content:center;border-radius:50%;overflow:hidden;background:#0a1733;color:#ffffff;font-weight:800;user-select:none}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+
+.chip{display:inline-block;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:4px 10px;background:#f7e9f2;color:#5e0743;white-space:nowrap}
+
+.bio-back{position:fixed;inset:0;z-index:200;background:rgba(10,23,51,.5);display:flex;align-items:flex-end;justify-content:center}
+.bio-sheet{position:relative;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ffffff;border-radius:24px 24px 0 0;padding:0 0 calc(28px + env(safe-area-inset-bottom))}
+.bio-grab{padding:10px 0 2px;text-align:center}
+.bio-grab span{display:inline-block;width:38px;height:4px;border-radius:999px;background:#cdd5e5}
+.bio-close{position:absolute;top:14px;right:16px;z-index:3;appearance:none;cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;border:1px solid #e3e8f2;background:#ffffff;color:#0a1733}
+.bio-close:hover{border-color:#0a1733}
+.bio-head{display:flex;align-items:center;gap:18px;padding:12px 64px 0 28px}
+.bio-head .av{width:84px;height:84px;font-size:28px}
+.bio-name{margin:0;font-size:24px;font-weight:700;line-height:1.15;letter-spacing:-.03em}
+.bio-title{margin:6px 0 0;font-size:15px;line-height:1.4;font-weight:600;color:#5e0743}
+.bio-org{margin:2px 0 0;font-size:15px;line-height:1.4;color:#4a5675}
+.bio-chips{display:flex;flex-wrap:wrap;gap:6px;margin:16px 28px 0}
+.bio-text{margin:16px 28px 0;font-size:16px;line-height:1.65;color:#34405e;text-wrap:pretty}
+.bio-text+.bio-text{margin-top:12px}
+.bio-text.soon{color:#4a5675;font-style:italic}
+.bio-when{margin:22px 28px 0}
+.bio-when h4{margin:0 0 10px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#4a5675}
+.bio-slot{display:block;background:#f6f8fc;border:1px solid #e3e8f2;border-radius:14px;padding:12px 16px;margin-bottom:8px;color:#0a1733;text-decoration:none}
+.bio-slot:hover{border-color:#0a1733;color:#0a1733}
+.bio-slot b{display:block;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12.5px;font-weight:500;color:#5e0743}
+.bio-slot span{display:block;margin-top:3px;font-size:15px;font-weight:600;line-height:1.4}
+body.bio-open{overflow:hidden}
+@media (min-width: 620px){
+.bio-back{align-items:center;padding:24px}
+.bio-sheet{max-width:580px;border-radius:24px;max-height:86vh}
+.bio-grab{display:none}
+.bio-head{padding-top:30px}
+}
+@media (prefers-reduced-motion: no-preference){
+.bio-sheet{animation:bio-rise .22s ease-out}
+@keyframes bio-rise{from{transform:translateY(14px);opacity:.6}to{transform:none;opacity:1}}
+}
+
+@media print{
+.cz-nav,footer,.bio-back{display:none !important}
+.page{padding-top:0}
+}
