@@ -15,8 +15,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="site.css?v=20261106f">
-<script src="site.js?v=20261106f" defer></script>
+<link rel="stylesheet" href="site.css?v=20261106h">
+<script src="site.js?v=20261106h" defer></script>
 <style>
   /* The RSVP card: a bar, then the form; the thank-you panel replaces it once sent. */
   .rsvp-section { padding: clamp(40px, 5vw, 72px) 0 clamp(56px, 7vw, 104px); }
@@ -108,9 +108,9 @@
 <div class="cz-wrap">
 <span class="cz-mono eyebrow">Colleague Zero · RSVP</span>
 <h1>Are you coming<span id="greet">?</span></h1>
-<p class="lede">Kickoff is Friday 13 November at 11:00 SAST. Tell us if you’ll be there so we can plan the weekend around the people who are coming.</p>
+<p class="lede">Kickoff is Friday 13 November at 09:00 SAST, online. Saturday is in person at WeWork The Link in Rosebank. Tell us if you’ll be there so we can plan the weekend around the people who are coming.</p>
 <div class="facts">
-<div><i class="cz-mono">Kickoff</i><b>Fri 13 Nov · 11:00</b></div>
+<div><i class="cz-mono">Kickoff</i><b>Fri 13 Nov · 09:00</b></div>
 <div><i class="cz-mono">Presentations</i><b>Sat 14 Nov · 12:00</b></div>
 <div><i class="cz-mono">Reply by</i><b>Wed 11 Nov</b></div>
 <div><i class="cz-mono">Prize</i><b>R10 000</b></div>
@@ -194,7 +194,7 @@
 <div class="cz-foot-grid">
 <div class="cz-foot-brand">
 <a href="https://www.melsoftacademy.com/" aria-label="Melsoft Academy website" target="_blank" rel="noopener noreferrer" style="display: inline-block"><img src="assets/melsoft-academy-white.webp" alt="Melsoft Academy" width="162" height="64"></a>
-<p>Colleague Zero is Melsoft Academy’s 24-hour online hackathon on multi-agent workflows for education.</p>
+<p>Colleague Zero is Melsoft Academy’s 24-hour hackathon on multi-agent workflows for education.</p>
 <div class="cz-foot-social">
 <a href="https://www.instagram.com/melsofthq/" aria-label="Melsoft Academy on Instagram" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"></circle></svg></a>
 <a href="https://www.facebook.com/melsoftacademy" aria-label="Melsoft Academy on Facebook" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
@@ -217,9 +217,9 @@
 <h2 class="cz-foot-h">Key dates</h2>
 <ul class="cz-foot-dates">
 <li><span class="cz-mono when">Mon 9 Nov</span><span class="what">Applications close</span></li>
-<li><span class="cz-mono when">Fri 13 Nov · 11:00</span><span class="what">Kickoff</span></li>
-<li><span class="cz-mono when">Sat 14 Nov · 12:00</span><span class="what">Live online presentations</span></li>
-<li><span class="cz-mono when">Sat 14 Nov · 13:00</span><span class="what">Winner announced: R10 000</span></li>
+<li><span class="cz-mono when">Fri 13 Nov · 09:00</span><span class="what">Kickoff, online</span></li>
+<li><span class="cz-mono when">Sat 14 Nov · 12:00</span><span class="what">Final presentations in Rosebank</span></li>
+<li><span class="cz-mono when">Sat 14 Nov · 14:00</span><span class="what">Winner announced: R10 000</span></li>
 </ul>
 </div>
 <div>
@@ -231,9 +231,13 @@
 </div>
 </div>
 </div>
+<div class="cz-foot-partners">
+<span class="cz-foot-h">In partnership with</span>
+<a href="https://gdg.community.dev/gdg-pretoria/" target="_blank" rel="noopener noreferrer"><img src="assets/gdg-pretoria-white.png" alt="GDG Pretoria" width="214" height="26"></a>
+</div>
 <div class="cz-foot-bottom">
 <span>© 2026 Melsoft Group. All rights reserved.</span>
-<span>Colleague Zero · 13–14 November 2026 · Online</span>
+<span>Colleague Zero · 13–14 November 2026 · Online and Rosebank, Johannesburg</span>
 <a href="https://www.melsoftacademy.com/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
 </div>
 </div>
@@ -351,7 +355,7 @@
           $("done-cta").hidden = true;
         } else {
           $("done-title").textContent = "You’re in" + name + ".";
-          $("done-text").textContent = "See you at kickoff on Friday 13 November at 11:00 SAST. We’ll email you everything you need for the day before then.";
+          $("done-text").textContent = "See you at kickoff on Friday 13 November at 09:00 SAST. We’ll email you everything you need for the day before then.";
           $("done-cta").hidden = false;
         }
         form.hidden = true;

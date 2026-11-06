@@ -3,7 +3,7 @@
  * Read by judges.html (the cards) and agenda.html (the judge row on day two).
  * Exposes window.Judges:
  *   .list            -> every judge, in the order they appear on the site
- *   .hosts           -> the co-hosts, shown above the judges
+ *   .hosts           -> the hosts, shown above the judges
  *   .initials(name)  -> "MS" for "Matshepo Soto"
  *   .avatar(j, size) -> a round photo, or initials if the photo is missing
  *   .open(slug)      -> show that judge's bio sheet
@@ -15,8 +15,9 @@
   "use strict";
 
   var JUDGING = [
-    { day: "Day 2 · Saturday 14 November", time: "12:00", what: "Live online presentations", href: "agenda.html#day2" },
-    { day: "Day 2 · Saturday 14 November", time: "13:00", what: "Winner announcement", href: "agenda.html#day2" }
+    { day: "Day 2 · Saturday 14 November", time: "12:00", what: "Final presentations, in person in Rosebank", href: "agenda.html#day2" },
+    { day: "Day 2 · Saturday 14 November", time: "13:00", what: "Judges’ deliberation", href: "agenda.html#day2" },
+    { day: "Day 2 · Saturday 14 November", time: "14:00", what: "Winner announcement", href: "agenda.html#day2" }
   ];
 
   var JUDGES = [
@@ -85,10 +86,10 @@
     }
   ];
 
-  // The co-hosts: shown above the judges, without a bio sheet.
+  // The hosts: shown above the judges, without a bio sheet.
   var HOSTS = [
-    { name: "Buhle Dlomo", title: "Co-host", photo: "assets/judges/buhle.webp" },
-    { name: "Lhoza Horo", title: "Co-host", photo: "assets/judges/lhoza.webp" }
+    { name: "Buhle Dlomo", title: "Host", photo: "assets/judges/buhle.webp" },
+    { name: "Lhoza Horo", title: "Host", photo: "assets/judges/lhoza.webp" }
   ];
 
   JUDGES.forEach(function (j) { j.on = JUDGING; });

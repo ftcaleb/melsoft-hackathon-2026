@@ -107,6 +107,11 @@ section[id]{scroll-margin-top:110px}
 .cz-foot-bottom{margin-top:clamp(48px,6vw,72px);padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px 24px;color:rgba(255,255,255,.55);font-size:13px}
 .cz-foot-bottom a{color:rgba(255,255,255,.7);text-decoration:none}
 .cz-foot-bottom a:hover{color:#ffffff}
+.cz-foot-partners{margin-top:clamp(40px,5vw,56px);padding-top:28px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-wrap:wrap;align-items:center;gap:14px 32px}
+.cz-foot-partners .cz-foot-h{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.cz-foot-partners a{display:block;border-radius:6px}
+.cz-foot-partners img{display:block;height:26px;width:auto}
+.cz-foot-partners + .cz-foot-bottom{margin-top:28px}
 @media (max-width: 1000px){
 .cz-foot-grid{grid-template-columns:1fr 1fr;gap:40px}
 }
@@ -114,7 +119,7 @@ section[id]{scroll-margin-top:110px}
 .cz-foot-grid{grid-template-columns:1fr;gap:36px}
 }
 
-/* ── Judges panel: co-hosts, then the judges, in one framed hairline grid ── */
+/* ── Judges panel: hosts, then the judges, in one framed hairline grid ── */
 /* The same panel on the landing page (each judge links to judges.html) and on judges.html
    (each judge opens a bio). Hairlines are the 1px gaps of each grid showing its background. */
 .cz-judges{padding:0;overflow:hidden}
@@ -165,7 +170,7 @@ section[id]{scroll-margin-top:110px}
 }
 
 /* ── Judges board: a midnight band (landing page, between agenda and teams; judges.html). One hairline
-   grid framed by corner plus-markers: a label column names each group, the co-hosts share the
+   grid framed by corner plus-markers: a label column names each group, the hosts share the
    first row with the plum Saturday card, and the six judges fill two rows of three. Hairlines
    are the 1px gaps showing the grid's background. Portraits sit in viewfinder brackets and,
    on pointer devices, rest in monochrome until hovered. Solid colours only. ── */
@@ -375,6 +380,9 @@ section[id]{scroll-margin-top:80px}
 .cz-track>li{padding:56px 22px 24px;display:flex;flex-direction:column;gap:8px}
 .cz-track>li::before{content:"";position:absolute;top:31px;left:22px;right:-13px;height:1px;background:rgba(255,255,255,.28)}
 .cz-track>li:last-child::before{right:22px}
+/* A track that wraps onto rows of --n: each row's line stops at its last item. */
+.cz-track-rows{row-gap:12px}
+.cz-track-rows>li:nth-child(4n)::before{right:22px}
 .cz-track>li::after{content:"";position:absolute;top:27px;left:22px;width:9px;height:9px;border-radius:50%;background:#e48cc4;box-shadow:0 0 0 4px rgba(228,140,196,.22),0 0 18px rgba(228,140,196,.9)}
 @media (max-width: 1000px){
 .cz-track{grid-template-columns:1fr}
