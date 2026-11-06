@@ -15,10 +15,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="site.css?v=20261106c">
+<link rel="stylesheet" href="site.css?v=20261106e">
+<script src="site.js?v=20261106e" defer></script>
 <style>
   /* The RSVP card: a bar, then the form; the thank-you panel replaces it once sent. */
-  .rsvp-section { padding: 0 0 clamp(56px, 7vw, 104px); }
+  .rsvp-section { padding: clamp(40px, 5vw, 72px) 0 clamp(56px, 7vw, 104px); }
   .rsvp { max-width: 760px; padding: 0; overflow: hidden; }
   .rsvp:hover { transform: none; }
   .rsvp-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px clamp(20px, 3vw, 32px); background: #f6f8fc; border-bottom: 1px solid #e3e8f2; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #4a5675; }
@@ -102,7 +103,8 @@
 
 <div class="page">
 
-<section class="page-head cz-grid-bg">
+<section class="page-head page-head-dark cz-grid-bg">
+<div class="page-head-net" aria-hidden="true"></div>
 <div class="cz-wrap">
 <span class="cz-mono eyebrow">Colleague Zero · RSVP</span>
 <h1>Are you coming<span id="greet">?</span></h1>

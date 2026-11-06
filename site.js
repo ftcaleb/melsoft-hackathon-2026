@@ -1,7 +1,7 @@
-/* Shared behaviour for the three event pages (agenda, judges, what's needed):
- *   - the live backdrop in the page head: Vanta's NET effect in the event's plum
- *     (vantajs.com), desktop only and loaded on demand, so phones and reduced-motion
- *     visitors never download three.js and keep the plain grid instead;
+/* Shared behaviour for the event pages (agenda, judges, what's needed, RSVP):
+ *   - the live backdrop in the page head: Vanta's NET effect in the event's plum, or pink
+ *     on midnight in a dark head (vantajs.com), desktop only and loaded on demand, so phones
+ *     and reduced-motion visitors never download three.js and keep the plain grid instead;
  *   - cells that rise into place as they scroll into view ([data-reveal] > *).
  * Loaded with defer, so it runs after each page's own script has built its lists.
  */
@@ -22,6 +22,8 @@
   var net = document.querySelector(".page-head-net");
   // Only once site.css is in: without it the canvas would sit in the flow over the headline.
   var styled = net && window.getComputedStyle(net).position === "absolute";
+  // The dark head (rsvp.html) gets pink lines on midnight; the others plum on white.
+  var dark = net && !!net.closest(".page-head-dark");
   if (styled && !calm && window.matchMedia("(min-width: 761px)").matches) {
     load("https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js")
       .then(function () { return load("https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"); })
@@ -30,7 +32,7 @@
           el: net,
           mouseControls: true, touchControls: false, gyroControls: false,
           minHeight: 200, minWidth: 200, scale: 1, scaleMobile: 1,
-          color: 0x5e0743, backgroundColor: 0xffffff,
+          color: dark ? 0xe48cc4 : 0x5e0743, backgroundColor: dark ? 0x070f24 : 0xffffff,
           points: 9, maxDistance: 21, spacing: 17, showDots: true
         });
         net.classList.add("on");

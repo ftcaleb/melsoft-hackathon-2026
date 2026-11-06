@@ -224,15 +224,13 @@ section[id]{scroll-margin-top:110px}
 }
 .cz-jb-day{display:flex;flex-direction:column;gap:16px;padding:28px;background:#5e0743 !important;color:#ffffff}
 .cz-jb-day>b{display:flex;align-items:center;gap:10px;font-weight:500;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#f2b8da}
-.cz-jb-live{flex:none;width:8px;height:8px;border-radius:50%;background:#ffffff;animation:czJbPulse 2s ease-out infinite}
-@keyframes czJbPulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.55)}100%{box-shadow:0 0 0 10px rgba(255,255,255,0)}}
+.cz-jb-live{flex:none;width:8px;height:8px;border-radius:50%;background:#ffffff}
 .cz-jb-day ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .cz-jb-day li{display:flex;gap:14px;font-size:15px;line-height:1.45;color:#f3d9e8}
 .cz-jb-day time{flex:none;min-width:44px;color:#ffffff}
 .cz-jb-prize{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.22);font-size:15px;color:#f3d9e8}
 .cz-jb-prize strong{display:block;font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#ffffff}
 @media (prefers-reduced-motion: reduce){
-.cz-jb-live{animation:none}
 .cz-jb-host::after,.cz-jb-judge::after,.cz-jb-ph::before,.cz-jb-ph::after,.cz-jb-go{transition:none}
 }
 @media (max-width: 1100px){
@@ -359,6 +357,20 @@ section[id]{scroll-margin-top:80px}
 @media (max-width: 760px){
 .page-head{padding-top:clamp(28px,7vw,44px)}
 }
+/* Dark version (rsvp.html): midnight navy with pink network lines and dark glass facts,
+   matching the judges band. The net draws on its own background, so no blend mode. */
+.page-head-dark{background:#070f24}
+.page-head-dark.cz-grid-bg::before{background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px)}
+.page-head-dark .page-head-net{mix-blend-mode:normal}
+.page-head-dark .page-head-net.on{opacity:.55}
+.page-head-dark .eyebrow{color:#f2b8da}
+.page-head-dark h1{color:#ffffff}
+.page-head-dark h1 span{color:#f2b8da}
+.page-head-dark .lede{color:#aab4cc}
+.page-head-dark .facts{background:rgba(10,23,51,.62);border-color:#1c2a4d;box-shadow:0 24px 48px -32px rgba(0,0,0,.8)}
+.page-head-dark .facts div+div{border-color:#1c2a4d}
+.page-head-dark .facts i{color:#8d98b3}
+.page-head-dark .facts b{color:#ffffff}
 
 /* ── Plum panel with frosted-glass cells on a connected track ───────────── */
 /* Judges: "What you present". What's needed: "Put these in your calendar". */
