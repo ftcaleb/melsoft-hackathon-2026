@@ -345,24 +345,19 @@ section[id]{scroll-margin-top:80px}
 .cz-mhead-logo img{display:block;height:40px;width:auto}
 }
 
-/* ── Page head: white with the faint grid, a live Vanta NET backdrop in plum (site.js),
-   and the facts on frosted glass ─────────────────────────────────────────── */
-/* The head runs up behind the floating navbar; without WebGL it is the plain grid. */
+/* ── Page head: white with the faint grid, and the facts on frosted glass ──── */
+/* The head runs up behind the floating navbar. */
 .page{padding-top:0}
 .page-head{overflow:hidden;padding:calc(104px + clamp(16px,3vw,48px)) 0 clamp(48px,6vw,88px);background:#ffffff}
-.page-head-net{position:absolute;inset:0;z-index:0;opacity:0;mix-blend-mode:multiply;pointer-events:none;transition:opacity 1.2s ease}
-.page-head-net.on{opacity:.4}
 .page-head .cz-wrap{position:relative;z-index:1}
 .page-head .facts{background:rgba(255,255,255,.62);border-color:#e3e8f2;-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);box-shadow:0 24px 48px -32px rgba(10,23,51,.35)}
 @media (max-width: 760px){
 .page-head{padding-top:clamp(28px,7vw,44px)}
 }
-/* Dark version (rsvp.html): midnight navy with pink network lines and dark glass facts,
-   matching the judges band. The net draws on its own background, so no blend mode. */
+/* Dark version (rsvp.html): midnight navy with a faint light grid and dark glass facts,
+   matching the judges band. */
 .page-head-dark{background:#070f24}
 .page-head-dark.cz-grid-bg::before{background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px)}
-.page-head-dark .page-head-net{mix-blend-mode:normal}
-.page-head-dark .page-head-net.on{opacity:.55}
 .page-head-dark .eyebrow{color:#f2b8da}
 .page-head-dark h1{color:#ffffff}
 .page-head-dark h1 span{color:#f2b8da}
