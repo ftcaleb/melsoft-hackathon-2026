@@ -3,6 +3,8 @@
  * Read by judges.html (the cards) and agenda.html (the judge row on day two).
  * Exposes window.Judges:
  *   .list            -> every judge, in the order they appear on the site
+ *   .hosts           -> the co-hosts, shown above the judges
+ *   .initials(name)  -> "MS" for "Matshepo Soto"
  *   .avatar(j, size) -> a round photo, or initials if the photo is missing
  *   .open(slug)      -> show that judge's bio sheet
  *
@@ -69,7 +71,24 @@
       org: "",
       photo: "assets/judges/tshego.webp",
       bio: []
+    },
+    {
+      slug: "matshepo-soto",
+      name: "Matshepo Soto",
+      title: "Software Engineer",
+      org: "Nedbank",
+      photo: "assets/judges/matshepo.webp",
+      bio: [
+        "Matshepo Soto is a software engineer at Nedbank, working as a backend developer on the bank’s payment systems. Matshepo trained as a software engineer at WeThinkCode.",
+        "In 2024 Matshepo won seven coding competitions and the Dynamism Youth in ICT and Rising Star in Coding awards, and has twice been named among the 100 Influential Women in Tech. Matshepo also leads Google Developer Group Pretoria."
+      ]
     }
+  ];
+
+  // The co-hosts: shown above the judges, without a bio sheet.
+  var HOSTS = [
+    { name: "Buhle Dlomo", title: "Co-host", photo: "assets/judges/buhle.webp" },
+    { name: "Lhoza Horo", title: "Co-host", photo: "assets/judges/lhoza.webp" }
   ];
 
   JUDGES.forEach(function (j) { j.on = JUDGING; });
@@ -202,5 +221,5 @@
     x.focus();
   }
 
-  window.Judges = { list: JUDGES, avatar: avatar, open: open };
+  window.Judges = { list: JUDGES, hosts: HOSTS, initials: initials, avatar: avatar, open: open };
 })();

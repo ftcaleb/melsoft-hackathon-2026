@@ -14,15 +14,22 @@
  * Each time you change this file, use Deploy > Manage deployments > Edit > New version,
  * otherwise the /exec URL keeps running the old code.
  *
- * Emails to applicants (the event is fully online; times are SAST):
+ * Emails to applicants (times are SAST). Whether the event is online or in person isn't decided
+ * yet, so no email says either; the day-of details go out separately once they're set.
  *   1. Straight away: confirmation with their details, both days at a glance and a calendar
  *      invite (.ics) for both days.
  *   2. Two hours later: a welcome with the Discord invite.
- *   3. Reminders: 7 days before (Fri 6 Nov 09:00), 2 days before (Wed 11 Nov 09:00) and the
- *      morning of each day (Fri 13 Nov 08:00, Sat 14 Nov 08:00). Set JOIN_URL before 13 Nov.
+ *   3. Lead-up: are you excited? (Thu 5 Nov 12:00), RSVP: are you coming? (Fri 6 Nov 09:00), sharpen
+ *      your idea (Mon 9 Nov 09:00) and two days to go (Wed 11 Nov 09:00), then the morning of
+ *      each day (Fri 13 Nov 08:00, Sat 14 Nov 08:00). Set JOIN_URL before 13 Nov if there's a link to join.
  *   Scheduled emails live in the "Email queue" tab; processFollowUps() runs every 10 minutes,
  *   queues reminders for anyone who doesn't have them yet and sends what's due.
  *   Preview with sendTestConfirmation(), sendTestWelcome() or sendTestReminders().
+ *
+ * RSVPs: each applicant gets a personal link to rsvp.html (signed, so nobody can answer for
+ * someone else). Answers land in a separate spreadsheet, one row per person; setup() creates
+ * it and logs its URL. The idea and two-days emails ask anyone who hasn't answered yet, and
+ * people who say they can't come get no further reminders.
  */
 
 const CONFIG = {
@@ -40,10 +47,15 @@ const CONFIG = {
   // Reminders before and on the event days (see REMINDERS below).
   SEND_REMINDERS: true,
   // Link people use to join on the day (kickoff and presentations). Leave empty until the
-  // platform is decided; the event-day emails then say the link is on its way.
+  // format is decided; the event-day emails then say the details are on their way.
   JOIN_URL: '',
   // Tab that holds scheduled follow-up emails. Created automatically.
   QUEUE_SHEET_NAME: 'Email queue',
+  // The RSVP page on the site. Each email links here with the person's email and a signature.
+  RSVP_URL: 'https://hackathon-26.melsoft.org/rsvp.html',
+  // Spreadsheet the RSVPs go to. Leave empty and setup() creates "Colleague Zero · RSVPs" in
+  // your Drive (its ID is kept in Script properties); or paste the ID of a sheet you made.
+  RSVP_SHEET_ID: '',
   // Where applicants' replies go. Leave empty to use the account the script runs as.
   REPLY_TO: '',
   MAX_FIELD_LENGTH: 2000,
@@ -67,19 +79,38 @@ const COLUMNS = [
   { key: 'source',            header: 'Source page' },
 ];
 
-// "Type" says which email a row is (welcome, remind7, …). Rows from before it existed are welcomes.
+// "Type" says which email a row is (welcome, rsvp, …). Rows from before it existed are welcomes.
 const QUEUE_COLUMNS = ['Email', 'Name', 'Due at', 'Sent at', 'Status', 'Attempts', 'Type'];
 const MAX_SEND_ATTEMPTS = 3;
 
 const ROLES = ['Developer', 'Designer', 'Educator', 'Student', 'Product or business', 'Other'];
 const EXPERIENCE = ['New to agents', 'Built a few prototypes', 'Shipped agents in production'];
 
-/** Run once from the editor: creates the header rows, the queue tab and the follow-up timer. */
+// One row per person in the RSVP sheet; a changed answer overwrites their row.
+const RSVP_COLUMNS = [
+  { key: 'updated',  header: 'Updated at' },
+  { key: 'email',    header: 'Email' },
+  { key: 'name',     header: 'Name' },
+  { key: 'coming',   header: 'Coming?' },
+  { key: 'team',     header: 'Team name' },
+  { key: 'people',   header: 'People coming (incl. them)' },
+  { key: 'note',     header: 'Note' },
+  { key: 'verified', header: 'Used their email link' },
+  { key: 'first',    header: 'First answered at' },
+];
+
+// The answers on the RSVP page (the form posts the key).
+const RSVP_ANSWERS = { yes: 'Yes', no: 'No' };
+
+/** Run once from the editor: creates the header rows, the queue tab, the RSVP sheet and the follow-up timer. */
 function setup() {
   const sheet = getSheet_();
   getQueueSheet_();
+  const rsvp = getRsvpSheet_(true);
+  rsvpToken_('setup'); // creates the signing secret before any link goes out
   setupFollowUps();
   Logger.log('Ready: ' + sheet.getParent().getUrl());
+  Logger.log('RSVPs: ' + rsvp.getParent().getUrl());
 }
 
 /** Installs (or reinstalls) the 10-minute timer that sends due follow-up emails. */
@@ -91,7 +122,9 @@ function setupFollowUps() {
   Logger.log('Follow-up timer installed: processFollowUps every 10 minutes.');
 }
 
-function doGet() {
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+  if (p.rsvp) return json_(rsvpLookup_(p));
   return json_({ ok: true, service: 'colleague-zero-leads' });
 }
 
@@ -105,6 +138,8 @@ function doPost(e) {
 
   // Honeypot: bots fill hidden fields, people don't. Pretend success so bots move on.
   if (data.website) return json_({ ok: true });
+
+  if (data.form === 'rsvp') return json_(handleRsvp_(data));
 
   const errors = validate_(data);
   if (errors.length) return json_({ ok: false, error: errors.join(' ') });
@@ -281,22 +316,27 @@ function queueWelcome_(r) {
   queueReminders_(queue, keys, r.email, r.name);
 }
 
-// --- Emails 3–6: reminders on fixed dates (all times SAST) ---------------------
+// --- Emails 3–8: reminders on fixed dates (all times SAST) ---------------------
 
 const REMINDERS = [
-  { type: 'remind7', at: new Date('2026-11-06T09:00:00+02:00') }, // 7 days before kickoff
+  { type: 'countdown', at: new Date('2026-11-05T12:00:00+02:00') }, // 8 days before: are you excited?
+  { type: 'rsvp',    at: new Date('2026-11-06T09:00:00+02:00') }, // 7 days before: are you coming?
+  { type: 'idea',    at: new Date('2026-11-09T09:00:00+02:00') }, // 4 days before; applications close
   { type: 'remind2', at: new Date('2026-11-11T09:00:00+02:00') }, // 2 days before
   { type: 'day1',    at: new Date('2026-11-13T08:00:00+02:00') }, // morning of day 1 (kickoff 11:00)
   { type: 'day2',    at: new Date('2026-11-14T08:00:00+02:00') }, // morning of day 2 (submissions 11:00)
 ];
 // A reminder that couldn't go out on time (e.g. the timer was off) is skipped after this long.
 const REMINDER_GRACE_HOURS = 12;
+// Emails dropped from the schedule; rows still queued for them are cancelled, not sent.
+// (remind7, "one week to go", gave its Fri 6 Nov slot to the RSVP email.)
+const RETIRED_EMAILS = ['remind7'];
 
-/** Queues every reminder that hasn't happened yet for one person. */
+/** Queues every reminder that is still ahead, or due within the grace period, for one person. */
 function queueReminders_(queue, keys, email, name) {
   if (!CONFIG.SEND_REMINDERS) return;
   const now = Date.now();
-  REMINDERS.filter(r => r.at.getTime() > now)
+  REMINDERS.filter(r => r.at.getTime() + REMINDER_GRACE_HOURS * 3600 * 1000 > now)
     .forEach(r => queueEmail_(queue, keys, email, name, r.type, r.at));
 }
 
@@ -317,7 +357,9 @@ function syncReminders_(queue) {
 function emailFor_(type, person) {
   switch (type) {
     case 'welcome': return welcomeEmail_(person);
-    case 'remind7': return reminderEmail_(person, 'remind7');
+    case 'countdown': return reminderEmail_(person, 'countdown');
+    case 'rsvp':    return reminderEmail_(person, 'rsvp');
+    case 'idea':    return reminderEmail_(person, 'idea');
     case 'remind2': return reminderEmail_(person, 'remind2');
     case 'day1':    return reminderEmail_(person, 'day1');
     case 'day2':    return reminderEmail_(person, 'day2');
@@ -346,13 +388,17 @@ function processFollowUps() {
       if (sentAt || !email || !(due instanceof Date) || due > now) return;
       if (Number(attempts) >= MAX_SEND_ATTEMPTS) return;
       const rowNum = i + 2;
-      if (type !== 'welcome' && now - due > REMINDER_GRACE_HOURS * 3600 * 1000) {
-        if (!String(row[4]).startsWith('Skipped')) queue.getRange(rowNum, 5).setValue('Skipped (too late)');
+      const to = String(email).replace(/^'/, '');
+      const skip = RETIRED_EMAILS.includes(type) ? 'Cancelled'
+        : type !== 'welcome' && now - due > REMINDER_GRACE_HOURS * 3600 * 1000 ? 'Skipped (too late)'
+        : !['welcome', 'rsvp'].includes(type) && (rsvpAnswers_().get(to.toLowerCase()) || {}).coming === 'No' ? 'Skipped (not coming)'
+        : '';
+      if (skip) {
+        if (String(row[4]) !== skip) queue.getRange(rowNum, 5).setValue(skip);
         return;
       }
       if (MailApp.getRemainingDailyQuota() < 1) return; // try again after the quota resets
 
-      const to = String(email).replace(/^'/, '');
       try {
         sendToApplicant_(to, emailFor_(type, { name: String(name).replace(/^'/, ''), email: to }));
         queue.getRange(rowNum, 4, 1, 3).setValues([[new Date(), 'Sent', Number(attempts) + 1]]);
@@ -431,9 +477,151 @@ function sendTestWelcome() {
   Logger.log('Test welcome sent to ' + me);
 }
 
+// --- RSVPs ----------------------------------------------------------------------
+
+/** Signature for a person's RSVP link, so the page can trust which applicant it is. */
+function rsvpToken_(email) {
+  const props = PropertiesService.getScriptProperties();
+  let secret = props.getProperty('RSVP_SECRET');
+  if (!secret) {
+    secret = Utilities.getUuid() + Utilities.getUuid();
+    props.setProperty('RSVP_SECRET', secret);
+  }
+  const sig = Utilities.computeHmacSha256Signature(String(email).toLowerCase(), secret);
+  return Utilities.base64EncodeWebSafe(sig).replace(/=+$/, '').slice(0, 22);
+}
+
+function rsvpLink_(email) {
+  return CONFIG.RSVP_URL + '?e=' + encodeURIComponent(email) + '&t=' + rsvpToken_(email);
+}
+
+/**
+ * The RSVP sheet (first tab of its own spreadsheet). With create, makes the spreadsheet if
+ * there isn't one yet; without, returns null instead. Create only under the script lock.
+ */
+function getRsvpSheet_(create) {
+  const props = PropertiesService.getScriptProperties();
+  const id = CONFIG.RSVP_SHEET_ID || props.getProperty('RSVP_SHEET_ID');
+  let ss;
+  if (id) {
+    ss = SpreadsheetApp.openById(id);
+  } else if (create) {
+    ss = SpreadsheetApp.create('Colleague Zero · RSVPs');
+    props.setProperty('RSVP_SHEET_ID', ss.getId());
+    ss.getSheets()[0].setName('RSVPs');
+  } else {
+    return null;
+  }
+  const sheet = ss.getSheets()[0];
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(RSVP_COLUMNS.map(c => c.header));
+    sheet.getRange(1, 1, 1, RSVP_COLUMNS.length).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+/** The latest application for an email: { name, team, size }, or null. */
+function findApplicant_(email) {
+  const sheet = getSheet_();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return null;
+  const col = key => COLUMNS.findIndex(c => c.key === key);
+  const unquote = v => String(v).replace(/^'/, '').trim();
+  const rows = sheet.getRange(2, 1, lastRow - 1, COLUMNS.length).getValues();
+  for (let i = rows.length - 1; i >= 0; i--) {
+    if (unquote(rows[i][col('email')]).toLowerCase() !== email) continue;
+    return { name: unquote(rows[i][col('name')]), team: unquote(rows[i][col('team')]), size: Number(rows[i][col('size')]) || 1 };
+  }
+  return null;
+}
+
+let rsvpCache_ = null;
+
+/** Email → that person's RSVP row (keyed by RSVP_COLUMNS), read once per run. */
+function rsvpAnswers_() {
+  if (rsvpCache_) return rsvpCache_;
+  rsvpCache_ = new Map();
+  const sheet = getRsvpSheet_(false);
+  if (!sheet || sheet.getLastRow() < 2) return rsvpCache_;
+  sheet.getRange(2, 1, sheet.getLastRow() - 1, RSVP_COLUMNS.length).getValues().forEach((row, i) => {
+    const rec = { row: i + 2 };
+    RSVP_COLUMNS.forEach((c, j) => { rec[c.key] = typeof row[j] === 'string' ? row[j].replace(/^'/, '') : row[j]; });
+    rsvpCache_.set(String(rec.email).toLowerCase(), rec);
+  });
+  return rsvpCache_;
+}
+
+/** For the RSVP page (GET ?rsvp=1&e=…&t=…): who this is and any answer they already gave. */
+function rsvpLookup_(p) {
+  const email = clean_(p.e).toLowerCase();
+  if (!email || clean_(p.t) !== rsvpToken_(email)) return { ok: false };
+  const person = findApplicant_(email);
+  if (!person) return { ok: false };
+  const prev = rsvpAnswers_().get(email);
+  const answer = prev ? Object.keys(RSVP_ANSWERS).find(k => RSVP_ANSWERS[k] === prev.coming) || '' : '';
+  return {
+    ok: true,
+    first: firstName_(person.name),
+    team: prev ? String(prev.team) : person.team,
+    people: prev && prev.people ? Number(prev.people) : person.size,
+    answer: answer,
+  };
+}
+
+/** Saves an RSVP from the page, or overwrites that person's earlier answer. */
+function handleRsvp_(d) {
+  const email = clean_(d.email).toLowerCase();
+  const answer = RSVP_ANSWERS[clean_(d.answer)];
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: 'Enter the email address you applied with.' };
+  if (!answer) return { ok: false, error: 'Let us know whether you’re coming.' };
+  const people = answer === 'Yes' ? Number(d.people) : '';
+  if (answer === 'Yes' && !(people >= 1 && people <= 5)) return { ok: false, error: 'Choose how many people are coming, from 1 to 5.' };
+
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(20000);
+  } catch (err) {
+    return { ok: false, error: 'The server is busy. Please try again in a moment.' };
+  }
+  try {
+    const person = findApplicant_(email);
+    if (!person) {
+      return { ok: false, error: 'We couldn’t find an application for ' + email + '. Use the email address you applied with, or call us on ' + EVENT.phone + '.' };
+    }
+    const sheet = getRsvpSheet_(true);
+    rsvpCache_ = null; // read the sheet afresh now that we hold the lock
+    const prev = rsvpAnswers_().get(email);
+    const now = new Date();
+    const rec = {
+      updated:  now,
+      email:    email,
+      name:     person.name,
+      coming:   answer,
+      team:     answer === 'Yes' ? clean_(d.team) : '',
+      people:   people,
+      note:     clean_(d.note),
+      verified: clean_(d.t) === rsvpToken_(email) ? 'Yes' : 'No',
+      first:    prev && prev.first ? prev.first : now,
+    };
+    const values = RSVP_COLUMNS.map(c => safeCell_(rec[c.key]));
+    if (prev) sheet.getRange(prev.row, 1, 1, values.length).setValues([values]);
+    else sheet.appendRow(values);
+    return { ok: true, first: firstName_(person.name), coming: answer };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Run from the editor: logs your own RSVP link, to try the page. */
+function testRsvpLink() {
+  Logger.log(rsvpLink_(Session.getActiveUser().getEmail()));
+}
+
 // --- Email content ------------------------------------------------------------
 
-// The event, as stated on the landing page. Both days are online; times are SAST.
+// The event, as stated on the landing page. Times are SAST; online or in person is still open,
+// so nothing here names a place.
 const EVENT = {
   kickoff: new Date('2026-11-13T11:00:00+02:00'),
   site: 'https://hackathon-26.melsoft.org/',
@@ -441,27 +629,25 @@ const EVENT = {
   sessions: [
     {
       uid: 'colleague-zero-2026-day1@melsoft.org',
-      title: 'Colleague Zero · Day 1 (online)',
+      title: 'Colleague Zero · Day 1',
       start: '20261113T090000Z', end: '20261113T160000Z',
       details: 'Kickoff at 11:00 SAST, idea pitches at 13:00, working demos at 17:00, then overnight hacking.',
     },
     {
       uid: 'colleague-zero-2026-day2@melsoft.org',
-      title: 'Colleague Zero · Day 2 (online)',
+      title: 'Colleague Zero · Day 2',
       start: '20261114T090000Z', end: '20261114T113000Z',
-      details: 'Projects submitted at 11:00 SAST, live online presentations at 12:00, winner announced at 13:00.',
+      details: 'Projects submitted at 11:00 SAST, live presentations at 12:00, winner announced at 13:00.',
     },
   ],
   days: [
     {
       day: 'Friday 13 November',
-      where: 'Online',
       items: [['11:00', 'Welcome and kickoff'], ['13:00', 'Idea pitches'], ['17:00', 'Working demos'], ['18:00', 'Overnight hacking']],
     },
     {
       day: 'Saturday 14 November',
-      where: 'Online',
-      items: [['11:00', 'Project submission'], ['12:00', 'Live online presentations'], ['13:00', 'Winner announced: R10 000']],
+      items: [['11:00', 'Project submission'], ['12:00', 'Live presentations'], ['13:00', 'Winner announced: R10 000']],
     },
   ],
   phone: '010 158 4346',
@@ -471,8 +657,7 @@ function calendarUrl_(s) {
   return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
     '&text=' + encodeURIComponent(s.title) +
     '&dates=' + s.start + '/' + s.end +
-    '&details=' + encodeURIComponent(s.details + ' ' + EVENT.site) +
-    '&location=' + encodeURIComponent('Online');
+    '&details=' + encodeURIComponent(s.details + ' ' + EVENT.site);
 }
 
 /** A calendar invite (.ics) with both days, attached to the confirmation email. */
@@ -484,7 +669,7 @@ function calendarIcs_() {
   EVENT.sessions.forEach(s => lines.push(
     'BEGIN:VEVENT', 'UID:' + s.uid, 'DTSTAMP:' + stamp, 'DTSTART:' + s.start, 'DTEND:' + s.end,
     'SUMMARY:' + esc(s.title), 'DESCRIPTION:' + esc(s.details + ' ' + EVENT.site),
-    'LOCATION:Online', 'URL:' + EVENT.site, 'END:VEVENT'));
+    'URL:' + EVENT.site, 'END:VEVENT'));
   lines.push('END:VCALENDAR');
   // Calendar files wrap lines longer than 75 bytes: continuation lines start with a space.
   const fold = l => l.length <= 60 ? l : l.match(/.{1,60}/g).join('\r\n ');
@@ -504,14 +689,13 @@ function firstName_(name) {
 
 /** Agenda for the given days, as plain text and as email HTML. */
 function agendaText_(days) {
-  return days.map(d => d.day + ' (' + d.where + ')\n' + d.items.map(i => '  ' + i[0] + '  ' + i[1]).join('\n')).join('\n\n');
+  return days.map(d => d.day + '\n' + d.items.map(i => '  ' + i[0] + '  ' + i[1]).join('\n')).join('\n\n');
 }
 
 function agendaHtml_(title, days) {
   const esc = escapeHtml_;
   const rows = days.map(d =>
-    '<tr><td style="padding:18px 0 6px;font:700 15px/1.4 Inter,Arial,sans-serif;color:#0a1733">' + esc(d.day) +
-    '<span style="font-weight:400;color:#646c85"> &middot; ' + esc(d.where) + '</span></td></tr>' +
+    '<tr><td style="padding:18px 0 6px;font:700 15px/1.4 Inter,Arial,sans-serif;color:#0a1733">' + esc(d.day) + '</td></tr>' +
     d.items.map(i =>
       '<tr><td style="padding:4px 0;font:15px/1.5 Inter,Arial,sans-serif;color:#34405e">' +
       '<span style="display:inline-block;width:56px;font-weight:700;color:#5e0743">' + esc(i[0]) + '</span>' + esc(i[1]) +
@@ -544,7 +728,7 @@ function confirmationEmail_(r) {
   const text = [
     'Hi ' + first + ',',
     '',
-    'Thank you for applying to Colleague Zero, our 24-hour online hackathon on multi-agent workflows. ' +
+    'Thank you for applying to Colleague Zero, our 24-hour hackathon on multi-agent workflows. ' +
       "We're so glad you want to build a digital colleague with us.",
     '',
     "We've entered " + entry + '.' +
@@ -552,7 +736,7 @@ function confirmationEmail_(r) {
     '',
     "What happens next: we'll email you with next steps before kickoff at 11:00 on Friday 13 November.",
     '',
-    'THE WEEKEND AT A GLANCE (both days online, times SAST)',
+    'THE WEEKEND AT A GLANCE (times SAST)',
     '',
     agendaText_(EVENT.days),
     '',
@@ -573,7 +757,7 @@ function confirmationEmail_(r) {
     heading: 'Thanks for applying, ' + esc(first) + '.',
     sections: [
       section_(
-        '<p style="margin:0 0 16px">Thank you for applying to <strong style="color:#0a1733">Colleague Zero</strong>, our 24-hour online hackathon on multi-agent workflows. ' +
+        '<p style="margin:0 0 16px">Thank you for applying to <strong style="color:#0a1733">Colleague Zero</strong>, our 24-hour hackathon on multi-agent workflows. ' +
         'We’re so glad you want to build a digital colleague with us.</p>' +
         '<p style="margin:0 0 16px">We’ve entered ' + esc(entry) + '.</p>' +
         (r.idea
@@ -584,7 +768,7 @@ function confirmationEmail_(r) {
           : '') +
         '<p style="margin:0">We’ll email you with next steps before kickoff at <strong style="color:#0a1733">11:00 on Friday 13 November</strong>.</p>',
         '32px 36px 8px'),
-      agendaHtml_('The weekend at a glance · both days online', EVENT.days),
+      agendaHtml_('The weekend at a glance', EVENT.days),
       calendarButtons_(),
       section_('<p style="margin:0;font-size:14px;color:#646c85">A calendar invite for both days is attached to this email.</p>', '4px 36px 0'),
       signOff_(),
@@ -596,15 +780,64 @@ function confirmationEmail_(r) {
 
 // --- Reminders ----------------------------------------------------------------
 
+const JOIN_PENDING = 'Keep an eye on your inbox and Discord: we’ll send you the details to join before it starts.';
+
 /** How to join on the day: a button once CONFIG.JOIN_URL is set, otherwise a heads-up. */
 function joinHtml_(label) {
   return CONFIG.JOIN_URL
     ? button_(CONFIG.JOIN_URL, label, '#0a1733')
-    : section_('<p style="margin:0">We’ll send you the link to join before it starts.</p>', '16px 36px 0');
+    : section_('<p style="margin:0">' + JOIN_PENDING + '</p>', '16px 36px 0');
 }
 
 function joinText_(label) {
-  return CONFIG.JOIN_URL ? label + ': ' + CONFIG.JOIN_URL : 'We’ll send you the link to join before it starts.';
+  return CONFIG.JOIN_URL ? label + ': ' + CONFIG.JOIN_URL : JOIN_PENDING.replace(/’/g, "'");
+}
+
+/** A numbered list of [title, text] steps, as plain text and as email HTML. */
+function stepsText_(steps) {
+  return steps.map((s, i) => (i + 1) + '. ' + s[0] + ' ' + s[1]).join('\n');
+}
+
+function stepsHtml_(steps) {
+  const esc = escapeHtml_;
+  return '<tr><td style="padding:16px 36px 0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">' +
+    steps.map((s, i) =>
+      '<tr><td valign="top" style="width:40px;padding:14px 0;' + (i ? 'border-top:1px solid #e3e8f2;' : '') +
+      'font:700 15px/1.55 Inter,Arial,sans-serif;color:#5e0743">0' + (i + 1) + '</td>' +
+      '<td style="padding:14px 0;' + (i ? 'border-top:1px solid #e3e8f2;' : '') + 'font:15px/1.55 Inter,Arial,sans-serif;color:#34405e">' +
+      '<strong style="color:#0a1733">' + esc(s[0]) + '</strong><br>' + esc(s[1]) + '</td></tr>').join('') +
+    '</table></td></tr>';
+}
+
+/** A text link to a page on the site, e.g. "See how projects are judged →". */
+function pageLinkHtml_(label, url) {
+  return section_('<p style="margin:0"><a href="' + escapeHtml_(url) + '" style="color:#5e0743;font-weight:700;text-decoration:none">' +
+    escapeHtml_(label) + ' &rarr;</a></p>', '16px 36px 0');
+}
+
+/**
+ * The RSVP ask in an email, as { text, html: [sections] }. "ask" is the RSVP email's button;
+ * "nudge" asks again if they haven't answered, or shows their answer with a link to change it.
+ */
+function rsvpBlock_(email, mode) {
+  const link = rsvpLink_(email);
+  const button = button_(link, 'Confirm your spot', '#5e0743');
+  const prev = mode === 'nudge' ? rsvpAnswers_().get(String(email).toLowerCase()) : null;
+  if (mode === 'ask') return { text: 'Confirm your spot: ' + link, html: [button] };
+  if (!prev) {
+    return {
+      text: "We still need your RSVP. Let us know if you're coming: " + link,
+      html: [section_('<p style="margin:0"><strong style="color:#0a1733">We still need your RSVP.</strong> ' +
+        'Let us know if you’re coming so we can plan the weekend.</p>', '16px 36px 0'), button],
+    };
+  }
+  const said = prev.coming === 'Yes' ? 'You’re confirmed. See you on Friday.' : 'You told us you can’t make it.';
+  return {
+    text: said.replace(/’/g, "'") + ' Plans changed? Update your RSVP: ' + link,
+    html: [section_('<div style="padding:14px 18px;border-left:3px solid #5e0743;background:#f7e9f2;border-radius:0 12px 12px 0">' +
+      '<strong style="color:#0a1733">' + escapeHtml_(said) + '</strong> Plans changed? ' +
+      '<a href="' + escapeHtml_(link) + '" style="color:#5e0743;font-weight:700;text-decoration:none">Update your RSVP &rarr;</a></div>', '16px 36px 0')],
+  };
 }
 
 function reminderEmail_(r, kind) {
@@ -612,30 +845,74 @@ function reminderEmail_(r, kind) {
   const esc = escapeHtml_;
   const discordHtml = button_(CONFIG.DISCORD_URL, 'Join us on Discord', '#5865F2');
   const discordText = 'Join us on Discord: ' + CONFIG.DISCORD_URL;
-  const signText = ['', 'Questions? Call the Melsoft Academy team on ' + EVENT.phone + '.', '', 'See you online,', 'The Melsoft Academy team'];
+  const signText = ['', 'Questions? Call the Melsoft Academy team on ' + EVENT.phone + '.', '', 'See you soon,', 'The Melsoft Academy team'];
+  const detailsSoon = 'We’ll send you everything you need for the day, including how to join, closer to kickoff.';
   let e;
 
-  if (kind === 'remind7') {
+  if (kind === 'countdown') {
     e = {
-      subject: 'One week to go, ' + first + ': Colleague Zero kicks off Friday 13 November',
-      preview: 'One week until kickoff. Here’s the plan for both days.',
-      eyebrow: 'One week to go',
-      heading: 'See you online next Friday, ' + esc(first) + '.',
+      subject: 'Are you excited, ' + first + '? Colleague Zero is eight days away',
+      preview: 'Eight days to go. Three ways to start getting ready today.',
+      eyebrow: 'Eight days to go',
+      heading: 'Are you excited, ' + esc(first) + '? We are.',
+      intro: 'In eight days, on <strong style="color:#0a1733">Friday 13 November at 11:00 SAST</strong>, Colleague Zero kicks off: ' +
+        '24 hours to build a digital colleague that does real work for education. The builders who prepare now get the most out of it.',
+      introText: 'In eight days, on Friday 13 November at 11:00 SAST, Colleague Zero kicks off: 24 hours to build a digital colleague that does real work for education. The builders who prepare now get the most out of it.',
+      steps: [
+        ['Get hands-on with your tools.', 'Build something small with an AI tool this week, even a simple agent. Every hour you play now is time saved on the day.'],
+        ['Look for the busywork.', 'Notice where teachers, students and school staff lose time. Your best idea might be hiding in plain sight.'],
+        ['Clear your weekend.', 'Block out Friday 13 and Saturday 14 November so you can give it your full focus.'],
+      ],
+      more: 'Come with your curiosity and your best energy. We can’t wait to see what you build.',
+    };
+  } else if (kind === 'rsvp') {
+    e = {
+      subject: 'Are you coming, ' + first + '? Confirm your spot for Colleague Zero',
+      preview: 'One week to go. Tell us if you’re coming: it takes less than a minute.',
+      eyebrow: 'One week to go · RSVP',
+      heading: 'Will we see you there, ' + esc(first) + '?',
       intro: 'Colleague Zero kicks off one week from today, on <strong style="color:#0a1733">Friday 13 November at 11:00 SAST</strong>. ' +
-        'Both days are fully online, so you can build from anywhere.',
-      introText: 'Colleague Zero kicks off one week from today, on Friday 13 November at 11:00 SAST. Both days are fully online, so you can build from anywhere.',
-      more: 'Use the week to get your team together, pick the education problem you want to solve and say hi on Discord.',
+        'To plan the weekend well we need to know exactly who’s coming, so please confirm your spot. It takes less than a minute.',
+      introText: 'Colleague Zero kicks off one week from today, on Friday 13 November at 11:00 SAST. To plan the weekend well we need to know exactly who\'s coming, so please confirm your spot. It takes less than a minute.',
+      rsvp: 'ask',
+      more: 'Can’t make it any more? Please use the same button to tell us, so we can plan. We’d love your answer by Wednesday 11 November.',
       days: EVENT.days, calendar: true,
+    };
+  } else if (kind === 'idea') {
+    e = {
+      subject: 'What will your digital colleague do, ' + first + '?',
+      preview: 'Four days to go. Three questions that make an idea stand out.',
+      eyebrow: 'Four days to go',
+      heading: 'Sharpen your idea, ' + esc(first) + '.',
+      intro: 'Kickoff is this Friday. The strongest projects start with a clear answer to three questions.',
+      introText: 'Kickoff is this Friday. The strongest projects start with a clear answer to three questions.',
+      steps: [
+        ['Who is it for?', 'A teacher, a student, a lecturer or a school admin. Pick one person and picture their week.'],
+        ['What does it take off their plate?', 'A whole task from start to finish, not a single answer to a single question.'],
+        ['How does it know it got it right?', 'The judges look for agents that check their own work and fix their mistakes.'],
+      ],
+      rsvp: 'nudge',
+      more: 'Applications close today. If a friend or classmate would love this, send them to ' + EVENT.site + ' before tonight.',
+      link: ['See how projects are judged', EVENT.site + 'judges.html'],
     };
   } else if (kind === 'remind2') {
     e = {
-      subject: 'Two days to go, ' + first + '!',
-      preview: 'Kickoff is this Friday at 11:00 SAST.',
+      subject: 'Two days to go, ' + first + '! Your checklist',
+      preview: 'Kickoff is Friday at 11:00 SAST. Here’s what to have ready.',
       eyebrow: 'Two days to go',
-      heading: 'Kickoff is this Friday, ' + esc(first) + '.',
-      intro: 'We kick off online on <strong style="color:#0a1733">Friday 13 November at 11:00 SAST</strong>.',
-      introText: 'We kick off online on Friday 13 November at 11:00 SAST.',
-      more: 'Make sure your team knows the plan, and join us on Discord so you don’t miss an announcement.',
+      heading: 'Two days to go, ' + esc(first) + '.',
+      intro: 'Kickoff is this <strong style="color:#0a1733">Friday, 13 November, at 11:00 SAST</strong>. ' +
+        'A little prep now means more time building on the day.',
+      introText: 'Kickoff is this Friday, 13 November, at 11:00 SAST. A little prep now means more time building on the day.',
+      steps: [
+        ['Your laptop and charger.', 'You’ll be building for 24 hours.'],
+        ['Your AI tools.', 'Accounts and API keys for the tools you plan to use, set up and tested before Friday.'],
+        ['A GitHub account.', 'You’ll submit your project as a repository with a README.'],
+        ['A plan for your team.', 'Everyone knows the problem you’re solving and who’s doing what.'],
+      ],
+      rsvp: 'nudge',
+      more: detailsSoon,
+      link: ['See everything you need', EVENT.site + 'needed.html'],
       days: EVENT.days, calendar: true,
     };
   } else if (kind === 'day1') {
@@ -644,8 +921,8 @@ function reminderEmail_(r, kind) {
       preview: 'Kickoff is at 11:00 SAST. Here’s today’s plan.',
       eyebrow: 'Day 1 · Friday 13 November',
       heading: 'Today’s the day, ' + esc(first) + '!',
-      intro: 'Colleague Zero kicks off online at <strong style="color:#0a1733">11:00 SAST</strong>.',
-      introText: 'Colleague Zero kicks off online at 11:00 SAST.',
+      intro: 'Colleague Zero kicks off at <strong style="color:#0a1733">11:00 SAST</strong>.',
+      introText: 'Colleague Zero kicks off at 11:00 SAST.',
       more: 'Pitch your idea at 13:00 and show your agents running at 17:00, even if they’re rough.',
       days: [EVENT.days[0]], join: 'Join the kickoff',
     };
@@ -656,8 +933,8 @@ function reminderEmail_(r, kind) {
       eyebrow: 'Day 2 · Saturday 14 November',
       heading: 'Final day, ' + esc(first) + '. Let’s see it working.',
       intro: 'Submit your project by <strong style="color:#0a1733">11:00 SAST</strong>, ' +
-        'live online presentations start at <strong style="color:#0a1733">12:00</strong> and the winner is announced at <strong style="color:#0a1733">13:00</strong>.',
-      introText: 'Submit your project by 11:00 SAST, live online presentations start at 12:00 and the winner is announced at 13:00.',
+        'live presentations start at <strong style="color:#0a1733">12:00</strong> and the winner is announced at <strong style="color:#0a1733">13:00</strong>.',
+      introText: 'Submit your project by 11:00 SAST, live presentations start at 12:00 and the winner is announced at 13:00.',
       more: 'You’ve built something real. We can’t wait to see it.',
       days: [EVENT.days[1]], join: 'Join the presentations',
     };
@@ -665,9 +942,14 @@ function reminderEmail_(r, kind) {
     throw new Error('Unknown reminder: ' + kind);
   }
 
+  const rsvp = e.rsvp ? rsvpBlock_(r.email, e.rsvp) : null;
   const text = ['Hi ' + first + ',', '', e.introText, '']
+    .concat(rsvp ? [rsvp.text, ''] : [])
     .concat(e.join ? [joinText_(e.join), ''] : [])
-    .concat([e.more.replace(/’/g, "'"), '', agendaText_(e.days), ''])
+    .concat(e.steps ? [stepsText_(e.steps).replace(/’/g, "'"), ''] : [])
+    .concat([e.more.replace(/’/g, "'"), ''])
+    .concat(e.link ? [e.link[0] + ': ' + e.link[1], ''] : [])
+    .concat(e.days ? [agendaText_(e.days), ''] : [])
     .concat(e.calendar ? ['Add it to your calendar:', '  Day 1: ' + calendarUrl_(EVENT.sessions[0]), '  Day 2: ' + calendarUrl_(EVENT.sessions[1]), ''] : [])
     .concat([discordText])
     .concat(signText)
@@ -679,10 +961,13 @@ function reminderEmail_(r, kind) {
     heading: e.heading,
     sections: [
       section_('<p style="margin:0">' + e.intro + '</p>', '32px 36px 0'),
-    ].concat(e.join ? [joinHtml_(e.join)] : []).concat([
-      section_('<p style="margin:0">' + esc(e.more) + '</p>', '16px 36px 8px'),
-      agendaHtml_(e.days.length > 1 ? 'Both days at a glance · online' : 'Today · online', e.days),
-    ]).concat(e.calendar ? [calendarButtons_()] : []).concat([
+    ].concat(rsvp ? rsvp.html : [])
+      .concat(e.join ? [joinHtml_(e.join)] : [])
+      .concat(e.steps ? [stepsHtml_(e.steps)] : [])
+      .concat([section_('<p style="margin:0">' + esc(e.more) + '</p>', '16px 36px 8px')])
+      .concat(e.link ? [pageLinkHtml_(e.link[0], e.link[1])] : [])
+      .concat(e.days ? [agendaHtml_(e.days.length > 1 ? 'Both days at a glance' : 'Today', e.days)] : [])
+      .concat(e.calendar ? [calendarButtons_()] : []).concat([
       discordHtml,
       signOff_(),
     ]),
@@ -691,7 +976,7 @@ function reminderEmail_(r, kind) {
   return { subject: e.subject, text: text, html: html };
 }
 
-/** Run from the editor to send yourself all four reminders (sample details). */
+/** Run from the editor to send yourself all six reminders (sample details). */
 function sendTestReminders() {
   const me = Session.getActiveUser().getEmail();
   REMINDERS.forEach(r => sendToApplicant_(me, reminderEmail_({ name: 'Thandi Mokoena', email: me }, r.type)));

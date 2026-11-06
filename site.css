@@ -114,37 +114,54 @@ section[id]{scroll-margin-top:110px}
 .cz-foot-grid{grid-template-columns:1fr;gap:36px}
 }
 
-/* ── Judges: one card, the five judges in an even row ─────────────────── */
-/* Same as the landing page's judges section. There each judge is a link to
-   this page; here each is a button that opens the bio. */
-
-.cz-judges{padding:clamp(28px,4vw,48px) clamp(16px,3vw,40px)}
-.cz-judges:hover{transform:none}
-.cz-judges-label{display:block;text-align:center;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#4a5675}
-.cz-judges-row{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
-.cz-judges-row li{display:flex}
-.cz-judges-row li+li{border-left:1px solid #e3e8f2}
-.cz-judges-row a,.cz-judges-row button{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 16px;text-decoration:none;color:#0a1733;appearance:none;border:0;background:none;font:inherit;cursor:pointer}
-.cz-judges-row img{display:block;width:104px;height:104px;border-radius:50%;object-fit:cover;background:#eef1f7;border:4px solid #ffffff;box-shadow:0 0 0 1px #e3e8f2,0 14px 28px -18px rgba(10,23,51,.5);transition:transform .25s ease}
-.cz-judges-row a:hover img,.cz-judges-row button:hover img{transform:translateY(-3px)}
+/* ── Judges panel: co-hosts, then the judges, in one framed hairline grid ── */
+/* The same panel on the landing page (each judge links to judges.html) and on judges.html
+   (each judge opens a bio). Hairlines are the 1px gaps of each grid showing its background. */
+.cz-judges{padding:0;overflow:hidden}
+.cz-judges:hover{transform:none;box-shadow:none;border-color:#e3e8f2}
+.cz-panel-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px clamp(20px,3vw,32px);background:#fbfcfe;border-bottom:1px solid #e3e8f2}
+.cz-judges-label{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#4a5675}
+.cz-panel-count{font-size:12px;letter-spacing:.1em;color:#5e0743}
+.cz-hosts,.cz-judges-row{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:#e3e8f2}
+.cz-hosts{grid-template-columns:repeat(2,minmax(0,1fr));border-bottom:1px solid #e3e8f2}
+.cz-hosts li{display:flex;align-items:center;gap:clamp(18px,2.4vw,28px);padding:clamp(24px,3.2vw,40px) clamp(20px,3vw,40px);background:#fdf4f9;color:#0a1733}
+.cz-hosts img{flex:none;display:block;width:120px;height:120px;border-radius:50%;object-fit:cover;background:#eef1f7;border:4px solid #ffffff;box-shadow:0 0 0 1px #e3e8f2,0 18px 32px -20px rgba(10,23,51,.55)}
+.cz-hosts li>div{display:flex;flex-direction:column;min-width:0}
+.cz-hn{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#5e0743}
+.cz-hosts .cz-jname{margin-top:8px;font-size:clamp(22px,2.2vw,28px);letter-spacing:-.03em;line-height:1.15}
+.cz-hosts .cz-jrole{margin:6px 0 0;font-size:15px}
+.cz-judges-row{grid-template-columns:repeat(6,minmax(0,1fr))}
+.cz-judges-row li{display:flex;position:relative;background:#ffffff}
+.cz-judges-row a,.cz-judges-row button{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:44px 16px 28px;text-decoration:none;color:#0a1733;appearance:none;border:0;background:none;font:inherit;cursor:pointer;transition:background .2s ease}
+.cz-judges-row a:hover,.cz-judges-row button:hover{background-color:#fbf6f9}
+.cz-jn{position:absolute;top:14px;left:16px;font-size:12px;letter-spacing:.1em;color:#4a5675}
+.cz-judges-row img,.cz-jav{display:block;width:104px;height:104px;border-radius:50%;object-fit:cover;background:#eef1f7;border:4px solid #ffffff;box-shadow:0 0 0 1px #e3e8f2,0 14px 28px -18px rgba(10,23,51,.5);transition:transform .25s ease}
+.cz-jav{display:flex;align-items:center;justify-content:center;background:#0a1733;color:#ffffff;font-size:32px;font-weight:800;letter-spacing:-.02em}
+.cz-judges-row a:hover img,.cz-judges-row button:hover img,.cz-judges-row a:hover .cz-jav,.cz-judges-row button:hover .cz-jav{transform:translateY(-3px)}
 .cz-judges-row a:hover .cz-jname,.cz-judges-row button:hover .cz-jname{color:#5e0743}
 .cz-jname{margin-top:18px;font-size:17px;font-weight:700;letter-spacing:-.02em;line-height:1.25}
+.cz-judges-row .cz-jname{min-height:2.5em;display:flex;align-items:flex-end;justify-content:center}
 .cz-jrole{margin:6px 0 12px;font-size:14px;font-weight:600;line-height:1.4;color:#5e0743}
 .cz-jmore{margin-top:auto;font-size:13.5px;font-weight:600;color:#0a1733}
 .cz-judges-row button:hover .cz-jmore{color:#5e0743}
+.cz-judges-foot{display:flex;justify-content:center;padding:24px;border-top:1px solid #e3e8f2}
 @media (max-width: 1100px){
-.cz-judges-row{display:flex;flex-wrap:wrap;justify-content:center;row-gap:32px}
-.cz-judges-row li{flex:0 0 33.333%}
-.cz-judges-row li+li{border-left:0}
+.cz-judges-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width: 700px){
+.cz-hosts{grid-template-columns:1fr}
+.cz-hosts img{width:96px;height:96px}
 }
 @media (max-width: 600px){
-.cz-judges-row{row-gap:28px}
-.cz-judges-row li{flex-basis:50%}
+.cz-judges-row{grid-template-columns:repeat(2,minmax(0,1fr))}
 .cz-judges-label{font-size:11px;letter-spacing:.12em}
-.cz-judges-row a,.cz-judges-row button{padding:4px 8px}
-.cz-judges-row img{width:88px;height:88px}
+.cz-judges-row a,.cz-judges-row button{padding:40px 8px 24px}
+.cz-judges-row img,.cz-jav{width:88px;height:88px}
+.cz-jav{font-size:28px}
 .cz-jname{font-size:16px}
 .cz-jrole{font-size:13px}
+.cz-hosts li{padding:20px}
+.cz-hosts img{width:80px;height:80px}
 }
 
 /* ── Avatars, chips and the judge bio sheet ───────────────────────────── */
@@ -191,3 +208,72 @@ body.bio-open{overflow:hidden}
 .cz-nav,footer,.bio-back{display:none !important}
 .page{padding-top:0}
 }
+
+/* Phones: the page links float at the bottom of the screen as a pill, where a thumb reaches
+   (the navbar's text links are hidden at this width). */
+.cz-tabbar{display:none}
+@media (max-width: 760px){
+.cz-tabbar{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));max-width:460px;margin-inline:auto;z-index:90;display:flex;gap:3px;padding:7px;border-radius:999px;background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%);border:1px solid rgba(10,23,51,.08);box-shadow:0 12px 30px rgba(10,23,51,.16),0 2px 8px rgba(10,23,51,.07)}
+.cz-tabbar a{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 4px 10px;border-radius:999px;color:#4a5675;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:background .18s ease,color .18s ease}
+.cz-tabbar svg{display:block}
+.cz-tabbar b{font-size:11px;font-weight:600;line-height:1.1;white-space:nowrap}
+.cz-tabbar a[aria-current="page"]{background:#0a1733;color:#ffffff}
+.cz-tabbar a[aria-current="page"] svg{stroke-width:2}
+.cz-tabbar a:focus-visible{outline:2px solid #5e0743;outline-offset:2px}
+.cz-foot .cz-wrap{padding-bottom:calc(132px + env(safe-area-inset-bottom))}
+}
+@media (max-width: 345px){
+.cz-tabbar{left:8px;right:8px;padding:6px;gap:2px}
+.cz-tabbar a{padding-inline:2px}
+}
+@media print{.cz-tabbar{display:none}}
+
+/* Phones: the floating navbar gives way to the slim header below and the bottom tab bar. */
+@media (max-width: 760px){
+.cz-nav{display:none !important}
+.page{padding-top:0}
+section[id]{scroll-margin-top:80px}
+}
+
+/* Phones: the full Melsoft Academy logo, centred in a header that sticks to the top; the
+   floating navbar is hidden at this width and the tab bar carries the page links. */
+.cz-mhead{display:none}
+@media (max-width: 760px){
+.cz-mhead{display:flex;align-items:center;justify-content:center;height:64px;position:sticky;top:0;z-index:95;background:#ffffff;border-bottom:1px solid #e3e8f2}
+.cz-mhead-logo{display:flex}
+.cz-mhead-logo img{display:block;height:40px;width:auto}
+}
+
+/* ── Page head: white with the faint grid, a live Vanta NET backdrop in plum (site.js),
+   and the facts on frosted glass ─────────────────────────────────────────── */
+/* The head runs up behind the floating navbar; without WebGL it is the plain grid. */
+.page{padding-top:0}
+.page-head{overflow:hidden;padding:calc(104px + clamp(16px,3vw,48px)) 0 clamp(48px,6vw,88px);background:#ffffff}
+.page-head-net{position:absolute;inset:0;z-index:0;opacity:0;mix-blend-mode:multiply;pointer-events:none;transition:opacity 1.2s ease}
+.page-head-net.on{opacity:.4}
+.page-head .cz-wrap{position:relative;z-index:1}
+.page-head .facts{background:rgba(255,255,255,.62);border-color:#e3e8f2;-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);box-shadow:0 24px 48px -32px rgba(10,23,51,.35)}
+@media (max-width: 760px){
+.page-head{padding-top:clamp(28px,7vw,44px)}
+}
+
+/* ── Plum panel with frosted-glass cells on a connected track ───────────── */
+/* Judges: "What you present". What's needed: "Put these in your calendar". */
+.cz-glow-panel{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;color:#ffffff;background:#5e0743}
+.cz-glass{position:relative;border:1px solid rgba(255,255,255,.18);border-radius:16px;background:rgba(255,255,255,.09);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 20px 40px -28px rgba(0,0,0,.6)}
+.cz-track{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:12px}
+.cz-track>li{padding:56px 22px 24px;display:flex;flex-direction:column;gap:8px}
+.cz-track>li::before{content:"";position:absolute;top:31px;left:22px;right:-13px;height:1px;background:rgba(255,255,255,.28)}
+.cz-track>li:last-child::before{right:22px}
+.cz-track>li::after{content:"";position:absolute;top:27px;left:22px;width:9px;height:9px;border-radius:50%;background:#e48cc4;box-shadow:0 0 0 4px rgba(228,140,196,.22),0 0 18px rgba(228,140,196,.9)}
+@media (max-width: 1000px){
+.cz-track{grid-template-columns:1fr}
+.cz-track>li{padding:20px 20px 20px 54px}
+.cz-track>li::before{top:34px;bottom:-13px;left:26px;right:auto;width:1px;height:auto}
+.cz-track>li:last-child::before{display:none}
+.cz-track>li::after{top:29px;left:22px}
+}
+
+/* ── Scroll reveal (site.js) ───────────────────────────────────────────── */
+.rv{opacity:0;transform:translateY(14px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1),background-color .2s ease}
+.rv.in{opacity:1;transform:none}
