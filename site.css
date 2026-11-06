@@ -164,6 +164,109 @@ section[id]{scroll-margin-top:110px}
 .cz-hosts img{width:80px;height:80px}
 }
 
+/* ── Judges board: a midnight band (landing page, between agenda and teams; judges.html). One hairline
+   grid framed by corner plus-markers: a label column names each group, the co-hosts share the
+   first row with the plum Saturday card, and the six judges fill two rows of three. Hairlines
+   are the 1px gaps showing the grid's background. Portraits sit in viewfinder brackets and,
+   on pointer devices, rest in monochrome until hovered. Solid colours only. ── */
+.cz-jsec{background:#070f24;color:#ffffff}
+.cz-jsec .cz-jeyebrow{color:#f2b8da}
+.cz-jsec h2{color:#ffffff}
+.cz-jsec h2 span{color:#f2b8da}
+.cz-jsec .cz-jlede{color:#aab4cc}
+.cz-jhead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px 48px;flex-wrap:wrap}
+.cz-jsec .cz-btn-ghost{color:#ffffff;border-color:rgba(255,255,255,.28)}
+.cz-jsec .cz-btn-ghost:hover{color:#0a1733;background:#ffffff;border-color:#ffffff}
+.cz-jb-frame{position:relative}
+.cz-jb-plus{position:absolute;z-index:1;width:13px;height:13px;color:#f2b8da;pointer-events:none}
+.cz-jb-plus::before,.cz-jb-plus::after{content:"";position:absolute;background:currentColor}
+.cz-jb-plus::before{left:6px;top:0;width:1px;height:13px}
+.cz-jb-plus::after{left:0;top:6px;width:13px;height:1px}
+.cz-jb-plus.tl{top:-6px;left:-6px}
+.cz-jb-plus.tr{top:-6px;right:-6px}
+.cz-jb-plus.bl{bottom:-6px;left:-6px}
+.cz-jb-plus.br{bottom:-6px;right:-6px}
+.cz-jb{display:grid;grid-template-columns:minmax(200px,.75fr) repeat(3,minmax(0,1fr));gap:1px;background:#1c2a4d;border:1px solid #1c2a4d}
+.cz-jb>*{position:relative;min-width:0;background:#0a1733}
+.cz-jb-label{display:flex;flex-direction:column;gap:6px;padding:28px;background:#081329 !important}
+.cz-jb-label b{font-weight:500;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#f2b8da}
+.cz-jb-label .cz-jb-count{margin-top:auto;padding-top:24px;font-size:80px;font-weight:800;letter-spacing:-.05em;line-height:1;color:#ffffff}
+@supports (-webkit-text-stroke:1px #ffffff){
+.cz-jb-label .cz-jb-count{color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.6)}
+}
+.cz-jb-note{font-size:14px;line-height:1.5;color:#8d98b3}
+.cz-jb-judges{grid-row:span 2}
+.cz-jb-host,.cz-jb-judge{display:flex;flex-direction:column;padding:28px 28px 30px;color:#ffffff}
+.cz-jb-ph{position:relative;flex:none;align-self:flex-start;display:block;padding:6px}
+.cz-jb-ph::before,.cz-jb-ph::after{content:"";position:absolute;width:12px;height:12px;border:0 solid #f2b8da;transition:transform .35s ease}
+.cz-jb-ph::before{top:0;left:0;border-width:1px 0 0 1px}
+.cz-jb-ph::after{right:0;bottom:0;border-width:0 1px 1px 0}
+.cz-jb-ph img{display:block;width:84px;height:84px;border-radius:10px;object-fit:cover;background:#13234a}
+.cz-jb-txt{display:flex;flex-direction:column;min-width:0}
+.cz-jb-host .cz-jb-txt,.cz-jb-judge .cz-jb-txt{margin-top:18px}
+.cz-jb-name{font-size:19px;font-weight:700;letter-spacing:-.02em;line-height:1.25;color:#ffffff}
+.cz-jb-host .cz-jb-name{font-size:22px;letter-spacing:-.03em}
+.cz-jb-title{margin-top:4px;font-size:15px;line-height:1.45;color:#aab4cc}
+.cz-jb-org{font-size:15px;font-weight:600;line-height:1.45;color:#f2b8da}
+.cz-jb-tag{position:absolute;top:28px;right:26px;padding:6px 10px;border:1px solid rgba(242,184,218,.4);border-radius:999px;font-size:11px;line-height:1;letter-spacing:.14em;text-transform:uppercase;color:#f2b8da}
+.cz-jb-go{position:absolute;top:26px;right:26px;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid #2a3a63;border-radius:50%;color:#ffffff;transition:background-color .25s ease,border-color .25s ease,color .25s ease,transform .25s ease}
+.cz-jb-host::after,.cz-jb-judge::after{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:#f2b8da;transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.cz-jb-judge{text-decoration:none;transition:background-color .3s ease}
+.cz-jb-judge:hover{background:#0e1d42}
+.cz-jb-host:hover::after,.cz-jb-judge:hover::after,.cz-jb-judge:focus-visible::after{transform:scaleX(1)}
+.cz-jb-judge:hover .cz-jb-go,.cz-jb-judge:focus-visible .cz-jb-go{background:#ffffff;border-color:#ffffff;color:#0a1733;transform:rotate(45deg)}
+.cz-jb-host:hover .cz-jb-ph::before,.cz-jb-judge:hover .cz-jb-ph::before{transform:translate(-3px,-3px)}
+.cz-jb-host:hover .cz-jb-ph::after,.cz-jb-judge:hover .cz-jb-ph::after{transform:translate(3px,3px)}
+.cz-jb-judge:focus-visible{outline:2px solid #f2b8da;outline-offset:-2px}
+@media (hover: hover) and (pointer: fine){
+.cz-jb-ph img{filter:grayscale(1) contrast(1.06);transition:filter .5s ease}
+.cz-jb-host:hover img,.cz-jb-judge:hover img,.cz-jb-judge:focus-visible img{filter:none}
+}
+.cz-jb-day{display:flex;flex-direction:column;gap:16px;padding:28px;background:#5e0743 !important;color:#ffffff}
+.cz-jb-day>b{display:flex;align-items:center;gap:10px;font-weight:500;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#f2b8da}
+.cz-jb-live{flex:none;width:8px;height:8px;border-radius:50%;background:#ffffff;animation:czJbPulse 2s ease-out infinite}
+@keyframes czJbPulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.55)}100%{box-shadow:0 0 0 10px rgba(255,255,255,0)}}
+.cz-jb-day ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.cz-jb-day li{display:flex;gap:14px;font-size:15px;line-height:1.45;color:#f3d9e8}
+.cz-jb-day time{flex:none;min-width:44px;color:#ffffff}
+.cz-jb-prize{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.22);font-size:15px;color:#f3d9e8}
+.cz-jb-prize strong{display:block;font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#ffffff}
+@media (prefers-reduced-motion: reduce){
+.cz-jb-live{animation:none}
+.cz-jb-host::after,.cz-jb-judge::after,.cz-jb-ph::before,.cz-jb-ph::after,.cz-jb-go{transition:none}
+}
+@media (max-width: 1100px){
+.cz-jb{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cz-jb-label{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 14px;padding:16px 24px}
+.cz-jb-label .cz-jb-count{order:3;margin:0 0 0 auto;padding:0;font-size:15px;font-weight:700;letter-spacing:0;color:#ffffff;-webkit-text-stroke:0}
+.cz-jb-judges{grid-row:auto}
+.cz-jb-day{grid-column:1/-1}
+}
+@media (max-width: 600px){
+.cz-jb{grid-template-columns:minmax(0,1fr)}
+.cz-jb-plus{display:none}
+.cz-jb-label{padding:14px 20px}
+.cz-jb-note{display:none}
+.cz-jb-host .cz-jb-name{font-size:19px}
+.cz-jb-tag{display:none}
+.cz-jb-day{padding:24px 20px}
+.cz-jb-host,.cz-jb-judge{flex-direction:row;align-items:center;gap:14px;padding:18px 20px}
+.cz-jb-ph{align-self:center;padding:5px}
+.cz-jb-ph img{width:60px;height:60px;border-radius:8px}
+.cz-jb-host .cz-jb-txt,.cz-jb-judge .cz-jb-txt{flex:1;margin:0}
+.cz-jb-name{font-size:17px}
+.cz-jb-title,.cz-jb-org{font-size:14px}
+.cz-jb-go{position:static;flex:none;width:32px;height:32px}
+}
+button.cz-jb-judge{appearance:none;width:100%;margin:0;border:0;font:inherit;text-align:left;cursor:pointer}
+.cz-jb-ph .cz-jav{display:flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:10px;background:#13234a;color:#ffffff;font-size:28px;font-weight:800;letter-spacing:-.02em}
+.cz-jsec .sec-head .eyebrow{color:#f2b8da}
+.cz-jsec .sec-head h2{color:#ffffff}
+.cz-jsec .sec-head p{color:#aab4cc}
+@media (max-width: 600px){
+.cz-jb-ph .cz-jav{width:60px;height:60px;border-radius:8px;font-size:20px}
+}
+
 /* ── Avatars, chips and the judge bio sheet ───────────────────────────── */
 
 .av{flex:none;display:flex;align-items:center;justify-content:center;border-radius:50%;overflow:hidden;background:#0a1733;color:#ffffff;font-weight:800;user-select:none}

@@ -14,8 +14,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="site.css?v=20261106b">
-<script src="site.js?v=20261106b" defer></script>
+<link rel="stylesheet" href="site.css?v=20261106c">
+<script src="site.js?v=20261106c" defer></script>
 <style>
   /* Framed panels like the judges panel: a header bar, then cells split by 1px hairlines
      (the grid's gap showing its background). */
@@ -98,13 +98,21 @@
 </div>
 </section>
 
-<section class="band-section">
+<section class="cz-jsec" id="panel" style="padding: clamp(64px, 8vw, 120px) 0">
 <div class="cz-wrap">
-<div class="cz-card cz-judges">
-<div class="cz-panel-bar"><span class="cz-mono cz-judges-label">Co-hosts</span><span class="cz-mono cz-panel-count">02</span></div>
-<ul class="cz-hosts" id="hosts" data-reveal></ul>
-<div class="cz-panel-bar"><span class="cz-mono cz-judges-label">Judges · Sat 14 Nov · 12:00</span><span class="cz-mono cz-panel-count">06</span></div>
-<ul class="cz-judges-row" id="judges" data-reveal></ul>
+<div class="sec-head">
+<span class="cz-mono eyebrow">The panel</span>
+<h2>Two hosts. Six judges.</h2>
+<p>Tap a judge to read their biography.</p>
+</div>
+<!-- The same board as the landing page's judges section; the script below adds the people. -->
+<div class="cz-jb-frame">
+<span class="cz-jb-plus tl" aria-hidden="true"></span><span class="cz-jb-plus tr" aria-hidden="true"></span><span class="cz-jb-plus bl" aria-hidden="true"></span><span class="cz-jb-plus br" aria-hidden="true"></span>
+<div class="cz-jb" id="board" data-reveal>
+<div class="cz-jb-label"><b class="cz-mono">Co-hosts</b><span class="cz-jb-count">02</span><span class="cz-jb-note">Your hosts for Colleague Zero</span></div>
+<div class="cz-jb-day" id="day"><b class="cz-mono"><span class="cz-jb-live" aria-hidden="true"></span>Saturday 14 November</b><ol><li><time class="cz-mono">12:00</time>Every team presents live</li><li><time class="cz-mono">13:00</time>Winner announced</li></ol><p class="cz-jb-prize" style="margin: 0"><strong>R10 000</strong>to the winning team</p></div>
+<div class="cz-jb-label cz-jb-judges"><b class="cz-mono">Judges</b><span class="cz-jb-count">06</span><span class="cz-jb-note">Founders, engineers and executives</span></div>
+</div>
 </div>
 </div>
 </section>
@@ -208,76 +216,64 @@
 <script>
 (function () {
   "use strict";
-  var grid = document.getElementById("judges");
+  var board = document.getElementById("board");
+  var day = document.getElementById("day");
 
-  // A photo, or an initials circle the same size for anyone without one yet.
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  // The photo in its viewfinder brackets, or initials in the same square for anyone without one.
   function face(p) {
-    if (!p.photo) {
-      var ini = document.createElement("span");
-      ini.className = "cz-jav";
+    var ph = el("span", "cz-jb-ph");
+    if (p.photo) {
+      var img = document.createElement("img");
+      img.src = p.photo;
+      img.alt = "";
+      img.width = 84;
+      img.height = 84;
+      ph.appendChild(img);
+    } else {
+      var ini = el("span", "cz-jav", window.Judges.initials(p.name));
       ini.setAttribute("aria-hidden", "true");
-      ini.textContent = window.Judges.initials(p.name);
-      return ini;
+      ph.appendChild(ini);
     }
-    var img = document.createElement("img");
-    img.src = p.photo;
-    img.alt = "";
-    img.width = 104;
-    img.height = 104;
-    return img;
+    return ph;
   }
 
-  function nameAndRole(box, p) {
-    var name = document.createElement("span");
-    name.className = "cz-jname";
-    name.textContent = p.name;
-    box.appendChild(name);
-    var role = document.createElement("span");
-    role.className = "cz-jrole";
-    role.textContent = p.title + (p.org ? ", " + p.org : "");
-    box.appendChild(role);
-  }
-
-  function pad(n) { return (n < 10 ? "0" : "") + n; }
-
-  // The same panel as the landing page's judges section; here each judge opens their bio.
-  window.Judges.list.forEach(function (j, i) {
-    var b = document.createElement("button");
-    b.type = "button";
-    b.setAttribute("aria-label", j.name + ", " + j.title + (j.org ? ", " + j.org : "") + ". Read biography");
-    var n = document.createElement("span");
-    n.className = "cz-mono cz-jn";
-    n.setAttribute("aria-hidden", "true");
-    n.textContent = pad(i + 1);
-    b.appendChild(n);
-    b.appendChild(face(j));
-    nameAndRole(b, j);
-    var more = document.createElement("span");
-    more.className = "cz-jmore";
-    more.textContent = (j.bio.length ? "Read biography" : "View profile") + " →";
-    b.appendChild(more);
-
-    b.addEventListener("click", function () { window.Judges.open(j.slug); });
-    var li = document.createElement("li");
-    li.appendChild(b);
-    grid.appendChild(li);
+  // The co-hosts share the first row with the Saturday card.
+  window.Judges.hosts.forEach(function (h) {
+    var cell = el("div", "cz-jb-host");
+    cell.appendChild(face(h));
+    var txt = el("div", "cz-jb-txt");
+    txt.appendChild(el("span", "cz-jb-name", h.name));
+    txt.appendChild(el("span", "cz-jb-title", "Hosting the event"));
+    cell.appendChild(txt);
+    cell.appendChild(el("span", "cz-mono cz-jb-tag", "Co-host"));
+    board.insertBefore(cell, day);
   });
 
-  var hosts = document.getElementById("hosts");
-  // A large cell each: photo beside a "Host 01" tag, the name and the role.
-  window.Judges.hosts.forEach(function (h, i) {
-    var li = document.createElement("li");
-    var pic = face(h);
-    if (pic.tagName === "IMG") { pic.width = 120; pic.height = 120; }
-    li.appendChild(pic);
-    var text = document.createElement("div");
-    var tag = document.createElement("span");
-    tag.className = "cz-mono cz-hn";
-    tag.textContent = "Host " + pad(i + 1);
-    text.appendChild(tag);
-    nameAndRole(text, h);
-    li.appendChild(text);
-    hosts.appendChild(li);
+  // The judges fill two rows of three after their label; each opens their bio.
+  var arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><path d="M8 7h9v9"></path></svg>';
+  window.Judges.list.forEach(function (j) {
+    var b = el("button", "cz-jb-judge");
+    b.type = "button";
+    b.setAttribute("aria-label", j.name + ", " + j.title + (j.org ? ", " + j.org : "") + ". Read biography");
+    b.appendChild(face(j));
+    var txt = el("span", "cz-jb-txt");
+    txt.appendChild(el("span", "cz-jb-name", j.name));
+    txt.appendChild(el("span", "cz-jb-title", j.title));
+    if (j.org) txt.appendChild(el("span", "cz-jb-org", j.org));
+    b.appendChild(txt);
+    var go = el("span", "cz-jb-go");
+    go.setAttribute("aria-hidden", "true");
+    go.innerHTML = arrow;
+    b.appendChild(go);
+    b.addEventListener("click", function () { window.Judges.open(j.slug); });
+    board.appendChild(b);
   });
 
   // judges.html#chido-dzinotyiwei opens that judge's bio.
