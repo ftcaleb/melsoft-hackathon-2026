@@ -8,13 +8,13 @@
 <link rel="canonical" href="https://hackathon-26.melsoft.org/judges.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Judges · Colleague Zero">
-<meta property="og:description" content="Six judges, final presentations in person on Saturday 14 November.">
+<meta property="og:description" content="Nine judges, final presentations in person on Saturday 14 November.">
 <meta property="og:image" content="https://hackathon-26.melsoft.org/og.png">
 <link rel="icon" type="image/webp" href="Icon-40.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="site.css?v=20261106h">
+<link rel="stylesheet" href="site.css?v=20261107a">
 <script src="site.js?v=20261106h" defer></script>
 <style>
   /* Framed panels like the judges panel: a header bar, then cells split by 1px hairlines
@@ -88,7 +88,7 @@
 <div class="cz-wrap">
 <span class="cz-mono eyebrow">Colleague Zero · Judges</span>
 <h1>Meet the<br> <span>judges.</span></h1>
-<p class="lede">On Saturday 14 November you present your digital colleague in person to six people from across South Africa’s technology and business world. Tap a judge to read their biography.</p>
+<p class="lede">On Saturday 14 November you present your digital colleague in person to nine people from across South Africa’s technology and business world. Tap a judge to read their biography.</p>
 <div class="facts">
 <div><i class="cz-mono">Presentations</i><b>Sat 14 Nov · 12:00</b></div>
 <div><i class="cz-mono">Winner announced</i><b>14:00</b></div>
@@ -102,7 +102,7 @@
 <div class="cz-wrap">
 <div class="sec-head">
 <span class="cz-mono eyebrow">The panel</span>
-<h2>Two hosts. Six judges.</h2>
+<h2>Two hosts. Nine judges.</h2>
 <p>Tap a judge to read their biography.</p>
 </div>
 <!-- The same board as the landing page's judges section; the script below adds the people. -->
@@ -111,7 +111,7 @@
 <div class="cz-jb" id="board" data-reveal>
 <div class="cz-jb-label"><b class="cz-mono">Hosts</b><span class="cz-jb-count">02</span><span class="cz-jb-note">Your hosts for Colleague Zero</span></div>
 <div class="cz-jb-day" id="day"><b class="cz-mono"><span class="cz-jb-live" aria-hidden="true"></span>Saturday 14 November</b><ol><li><time class="cz-mono">12:00</time>Final presentations</li><li><time class="cz-mono">13:00</time>Judges’ deliberation</li><li><time class="cz-mono">14:00</time>Winner announced</li></ol><p class="cz-jb-prize" style="margin: 0"><strong>R10 000</strong>to the winning team</p></div>
-<div class="cz-jb-label cz-jb-judges"><b class="cz-mono">Judges</b><span class="cz-jb-count">06</span><span class="cz-jb-note">Founders, engineers and executives</span></div>
+<div class="cz-jb-label cz-jb-judges"><b class="cz-mono">Judges</b><span class="cz-jb-count">09</span><span class="cz-jb-note">Founders, engineers and executives</span></div>
 </div>
 </div>
 </div>
@@ -216,7 +216,7 @@
 
 </div>
 
-<script src="judges.js?v=20261106h"></script>
+<script src="judges.js?v=20261107a"></script>
 <script>
 (function () {
   "use strict";
@@ -260,7 +260,7 @@
     board.insertBefore(cell, day);
   });
 
-  // The judges fill two rows of three after their label; each opens their bio.
+  // The judges fill three rows of three after their label; each opens their bio.
   var arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><path d="M8 7h9v9"></path></svg>';
   window.Judges.list.forEach(function (j) {
     var b = el("button", "cz-jb-judge");

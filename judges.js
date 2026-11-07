@@ -83,6 +83,33 @@
         "Matshepo Soto is a software engineer at Nedbank, working as a backend developer on the bank’s payment systems. Matshepo trained as a software engineer at WeThinkCode.",
         "In 2024 Matshepo won seven coding competitions and the Dynamism Youth in ICT and Rising Star in Coding awards, and has twice been named among the 100 Influential Women in Tech. Matshepo also leads Google Developer Group Pretoria."
       ]
+    },
+    {
+      slug: "mpho-montsho",
+      name: "Mpho Montsho",
+      title: "Judge",
+      org: "",
+      photo: "assets/judges/mpho.webp",
+      bio: []
+    },
+    {
+      slug: "gibson",
+      name: "Gibson",
+      title: "Judge",
+      org: "",
+      photo: "assets/judges/gibson.webp",
+      bio: []
+    },
+    {
+      slug: "dineo-senona",
+      name: "Dineo Senona",
+      title: "Software Engineer",
+      org: "GDG Pretoria",
+      photo: "assets/judges/dineo.webp",
+      bio: [
+        "Dineo Senona is a software engineer and one of the organisers of Google Developer Group Pretoria, the community partnering with Melsoft Academy on Colleague Zero.",
+        "Dineo first came to a GirlCode workshop as a fresh graduate. In 2024, as a senior software engineer at Entelect, Dineo returned to GirlCode as a mentor and speaker, giving a talk on version control to women attending their first workshop."
+      ]
     }
   ];
 

@@ -171,7 +171,7 @@ section[id]{scroll-margin-top:110px}
 
 /* ── Judges board: a midnight band (landing page, between agenda and teams; judges.html). One hairline
    grid framed by corner plus-markers: a label column names each group, the hosts share the
-   first row with the plum Saturday card, and the six judges fill two rows of three. Hairlines
+   first row with the plum Saturday card, and the nine judges fill three rows of three. Hairlines
    are the 1px gaps showing the grid's background. Portraits sit in viewfinder brackets and,
    on pointer devices, rest in monochrome until hovered. Solid colours only. ── */
 .cz-jsec{background:#070f24;color:#ffffff}
@@ -200,7 +200,7 @@ section[id]{scroll-margin-top:110px}
 .cz-jb-label .cz-jb-count{color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.6)}
 }
 .cz-jb-note{font-size:14px;line-height:1.5;color:#8d98b3}
-.cz-jb-judges{grid-row:span 2}
+.cz-jb-judges{grid-row:span 3}
 .cz-jb-host,.cz-jb-judge{display:flex;flex-direction:column;padding:28px 28px 30px;color:#ffffff}
 .cz-jb-ph{position:relative;flex:none;align-self:flex-start;display:block;padding:6px}
 .cz-jb-ph::before,.cz-jb-ph::after{content:"";position:absolute;width:12px;height:12px;border:0 solid #f2b8da;transition:transform .35s ease}
@@ -262,7 +262,7 @@ section[id]{scroll-margin-top:110px}
 .cz-jb-go{position:static;flex:none;width:32px;height:32px}
 }
 button.cz-jb-judge{appearance:none;width:100%;margin:0;border:0;font:inherit;text-align:left;cursor:pointer}
-.cz-jb-ph .cz-jav{display:flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:10px;background:#13234a;color:#ffffff;font-size:28px;font-weight:800;letter-spacing:-.02em}
+.cz-jb-ph .cz-jav{display:flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:10px;border:0;box-shadow:none;background:#13234a;color:#ffffff;font-size:28px;font-weight:800;letter-spacing:-.02em}
 .cz-jsec .sec-head .eyebrow{color:#f2b8da}
 .cz-jsec .sec-head h2{color:#ffffff}
 .cz-jsec .sec-head p{color:#aab4cc}
