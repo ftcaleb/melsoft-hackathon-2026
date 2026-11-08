@@ -66,12 +66,15 @@
       ]
     },
     {
-      slug: "tshegofhatso",
-      name: "Tshegofhatso",
-      title: "Software Engineer",
-      org: "",
+      slug: "tshegofatso-isaac",
+      name: "Tshegofatso Isaac",
+      title: "Technical Team Lead",
+      org: "Zulzi",
       photo: "assets/judges/tshego.webp",
-      bio: []
+      bio: [
+        "Tshegofatso Isaac is a technical team lead and software engineer at Zulzi, the South African on-demand delivery technology company. Before Zulzi, Tshegofatso co-founded EaziCode and worked as a React Native developer.",
+        "Outside work, Tshegofatso runs The Tshegofatso, a YouTube channel on technology, entrepreneurship and financial education that was selected for Google’s #YouTubeBlackVoices Creator Class of 2022, and hosts The Chat Café podcast. Tshegofatso has also been a TechWomen mentee."
+      ]
     },
     {
       slug: "matshepo-soto",
@@ -88,17 +91,23 @@
       slug: "mpho-montsho",
       name: "Mpho Montsho",
       title: "Judge",
-      org: "",
+      org: "Techbridge Innovations",
       photo: "assets/judges/mpho.webp",
-      bio: []
+      bio: [
+        "Mpho Montsho grew up in a village two hours west of Johannesburg and went from African Leadership Academy to Babson College in the United States on a full-tuition Global Scholars scholarship, graduating in 2024.",
+        "At Babson, Mpho focused on entrepreneurship and finance, was part of the student-run Babson College Fund and interned at Credit Suisse before moving into investment banking. Mpho is now with Techbridge Innovations in New York."
+      ]
     },
     {
-      slug: "gibson",
-      name: "Gibson",
-      title: "Judge",
-      org: "",
+      slug: "gibson-munene",
+      name: "Gibson Munene",
+      title: "Software Engineer II",
+      org: "Microsoft",
       photo: "assets/judges/gibson.webp",
-      bio: []
+      bio: [
+        "Gibson Munene is a software engineer at Microsoft with a passion for building scalable systems, and brings experience across cloud and mobile development.",
+        "Gibson studied at Babson College in the United States after African Leadership Academy in Johannesburg, where Gibson tutored students in beginner web and Android programming and ran digital media for the academy’s Model African Union."
+      ]
     },
     {
       slug: "dineo-senona",
