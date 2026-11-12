@@ -39,6 +39,8 @@
   .opt:hover span { border-color: #8c9bbb; }
   .opt input:checked + span { border-color: #5e0743; background: #5e0743; color: #ffffff; }
   .opt input:focus-visible + span { outline: 3px solid #5e0743; outline-offset: 3px; }
+  .rate-err { margin: 10px 0 0; font-size: 14px; font-weight: 600; color: #b42318; }
+  .rate.missing .opt span { border-color: #b42318; }
   .ends { display: flex; justify-content: space-between; max-width: 420px; margin-top: 6px; font-size: 13px; color: #4a5675; }
 
   .choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 420px; }
@@ -122,7 +124,7 @@
 <div class="fb-body">
 
 <div class="fb-group">
-<fieldset class="rate" data-key="overall"><legend>Overall, how was Colleague Zero?</legend><div class="pills"><label class="opt"><input type="radio" name="overall" value="1"><span>1</span></label><label class="opt"><input type="radio" name="overall" value="2"><span>2</span></label><label class="opt"><input type="radio" name="overall" value="3"><span>3</span></label><label class="opt"><input type="radio" name="overall" value="4"><span>4</span></label><label class="opt"><input type="radio" name="overall" value="5"><span>5</span></label></div><div class="ends" aria-hidden="true"><span>Poor</span><span>Great</span></div></fieldset>
+<fieldset class="rate" data-key="overall" id="overall"><legend>Overall, how was Colleague Zero?</legend><div class="pills"><label class="opt"><input type="radio" name="overall" value="1"><span>1</span></label><label class="opt"><input type="radio" name="overall" value="2"><span>2</span></label><label class="opt"><input type="radio" name="overall" value="3"><span>3</span></label><label class="opt"><input type="radio" name="overall" value="4"><span>4</span></label><label class="opt"><input type="radio" name="overall" value="5"><span>5</span></label></div><div class="ends" aria-hidden="true"><span>Poor</span><span>Great</span></div></fieldset>
 <fieldset class="rate" data-key="challenge"><legend>The challenge</legend><div class="pills"><label class="opt"><input type="radio" name="challenge" value="1"><span>1</span></label><label class="opt"><input type="radio" name="challenge" value="2"><span>2</span></label><label class="opt"><input type="radio" name="challenge" value="3"><span>3</span></label><label class="opt"><input type="radio" name="challenge" value="4"><span>4</span></label><label class="opt"><input type="radio" name="challenge" value="5"><span>5</span></label></div><div class="ends" aria-hidden="true"><span>Poor</span><span>Great</span></div></fieldset>
 <fieldset class="rate" data-key="food"><legend>The food</legend><div class="pills"><label class="opt"><input type="radio" name="food" value="1"><span>1</span></label><label class="opt"><input type="radio" name="food" value="2"><span>2</span></label><label class="opt"><input type="radio" name="food" value="3"><span>3</span></label><label class="opt"><input type="radio" name="food" value="4"><span>4</span></label><label class="opt"><input type="radio" name="food" value="5"><span>5</span></label></div><div class="ends" aria-hidden="true"><span>Poor</span><span>Great</span></div></fieldset>
 <fieldset class="rate" data-key="vibe"><legend>The vibe</legend><div class="pills"><label class="opt"><input type="radio" name="vibe" value="1"><span>1</span></label><label class="opt"><input type="radio" name="vibe" value="2"><span>2</span></label><label class="opt"><input type="radio" name="vibe" value="3"><span>3</span></label><label class="opt"><input type="radio" name="vibe" value="4"><span>4</span></label><label class="opt"><input type="radio" name="vibe" value="5"><span>5</span></label></div><div class="ends" aria-hidden="true"><span>Poor</span><span>Great</span></div></fieldset>
@@ -248,14 +250,31 @@
     return on ? on.value : "";
   }
 
+  // Clear the overall-rating warning as soon as one is picked.
+  Array.prototype.forEach.call(form.querySelectorAll('input[name="overall"]'), function (r) {
+    r.addEventListener("change", function () {
+      $("overall").classList.remove("missing");
+      var note = $("overall-err");
+      if (note) note.remove();
+    });
+  });
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (sending) return;
     err.hidden = true;
     if (!picked("overall")) {
-      err.textContent = "Give Colleague Zero an overall rating from 1 to 5.";
-      err.hidden = false;
-      form.querySelector('input[name="overall"]').focus();
+      // Show the message where the question is, not down by the button.
+      var box = $("overall");
+      box.classList.add("missing");
+      if (!$("overall-err")) {
+        var note = document.createElement("p");
+        note.className = "rate-err"; note.id = "overall-err"; note.setAttribute("role", "alert");
+        note.textContent = "Pick a rating from 1 to 5 to send your feedback.";
+        box.appendChild(note);
+      }
+      box.scrollIntoView({ block: "center", behavior: "smooth" });
+      form.querySelector('input[name="overall"]').focus({ preventScroll: true });
       return;
     }
     var data = new URLSearchParams({ form: "feedback", best: $("f-best").value, better: $("f-better").value,
