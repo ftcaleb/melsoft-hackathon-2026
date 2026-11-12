@@ -187,6 +187,17 @@ function setupFollowUps() {
 function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.rsvp) return json_(rsvpLookup_(p));
+  // GET ?setup=tabs creates the Attendance and Feedback tabs (or says why it couldn't).
+  // Only ever adds the two empty tabs, once, so it is safe to visit again.
+  if (p.setup === 'tabs') {
+    try {
+      const attendance = getAttendanceSheet_();
+      const feedback = getFeedbackSheet_();
+      return json_({ ok: true, sheet: attendance.getParent().getName(), tabs: [attendance.getName(), feedback.getName()] });
+    } catch (err) {
+      return json_({ ok: false, error: String((err && err.message) || err) });
+    }
+  }
   return json_({ ok: true, service: 'colleague-zero-leads' });
 }
 
