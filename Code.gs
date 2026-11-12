@@ -164,6 +164,17 @@ function setup() {
   Logger.log('RSVPs: ' + rsvp.getParent().getUrl());
 }
 
+/**
+ * Run once from the editor: creates the Attendance and Feedback tabs (with their header rows)
+ * in the applications sheet now, instead of waiting for the first response. Safe to run again.
+ */
+function createResponseTabs() {
+  const attendance = getAttendanceSheet_();
+  const feedback = getFeedbackSheet_();
+  Logger.log('Attendance tab: ' + attendance.getParent().getUrl() + '#gid=' + attendance.getSheetId());
+  Logger.log('Feedback tab: ' + feedback.getParent().getUrl() + '#gid=' + feedback.getSheetId());
+}
+
 /** Installs (or reinstalls) the 10-minute timer that sends due follow-up emails. */
 function setupFollowUps() {
   ScriptApp.getProjectTriggers()
