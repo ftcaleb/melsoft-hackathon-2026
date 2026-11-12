@@ -30,6 +30,15 @@
  * someone else). Answers land in a separate spreadsheet, one row per person; setup() creates
  * it and logs its URL. The idea and two-days emails ask anyone who hasn't answered yet, and
  * people who say they can't come get no further reminders.
+ *
+ * Attendance: attend.html?day=1 and attend.html?day=2 (the QR codes in assets/qr point there).
+ * Each sign-in lands in the "Attendance" tab of the applications sheet, one row per person per
+ * day; signing in twice on the same day keeps the first time. A day only accepts sign-ins on
+ * its own date (SAST) unless ATTENDANCE_ANY_DAY is true, which you can use to test beforehand.
+ *
+ * Feedback: feedback.html posts ratings (1–5) and comments to the "Feedback" tab of the
+ * applications sheet, one row per answer. Only the overall rating is required, and answers
+ * are anonymous (no name or email is asked for).
  */
 
 const CONFIG = {
@@ -58,6 +67,12 @@ const CONFIG = {
   RSVP_SHEET_ID: '',
   // Where applicants' replies go. Leave empty to use the account the script runs as.
   REPLY_TO: '',
+  // Tab in the applications sheet that attendance sign-ins go to. Created automatically.
+  ATTENDANCE_SHEET_NAME: 'Attendance',
+  // true lets people sign in for either day on any date (for testing). Set false for the event.
+  ATTENDANCE_ANY_DAY: false,
+  // Tab in the applications sheet that feedback goes to. Created automatically.
+  FEEDBACK_SHEET_NAME: 'Feedback',
   MAX_FIELD_LENGTH: 2000,
 };
 
@@ -99,6 +114,40 @@ const RSVP_COLUMNS = [
   { key: 'first',    header: 'First answered at' },
 ];
 
+// One row per person per day in the Attendance tab.
+const ATTENDANCE_COLUMNS = [
+  { key: 'time',    header: 'Signed in at' },
+  { key: 'day',     header: 'Day' },
+  { key: 'name',    header: 'Full name' },
+  { key: 'email',   header: 'Email' },
+  { key: 'phone',   header: 'Cell number' },
+  { key: 'org',     header: 'Company or school' },
+  { key: 'team',    header: 'Team name' },
+  { key: 'applied', header: 'Applied?' },
+  { key: 'rsvp',    header: 'RSVP' },
+];
+
+// One row per feedback answer. Ratings are 1–5; only overall is required.
+const FEEDBACK_RATINGS = ['overall', 'challenge', 'food', 'vibe', 'organisation', 'venue'];
+const FEEDBACK_COLUMNS = [
+  { key: 'time',         header: 'Submitted at' },
+  { key: 'overall',      header: 'Overall (1–5)' },
+  { key: 'challenge',    header: 'Challenge (1–5)' },
+  { key: 'food',         header: 'Food (1–5)' },
+  { key: 'vibe',         header: 'Vibe (1–5)' },
+  { key: 'organisation', header: 'How it was run (1–5)' },
+  { key: 'venue',        header: 'Venue (1–5)' },
+  { key: 'best',         header: 'Enjoyed most' },
+  { key: 'better',       header: 'Do better next time' },
+  { key: 'again',        header: 'Come to the next one?' },
+];
+
+// The days people can sign in for (date in SAST, as yyyy-MM-dd).
+const ATTENDANCE_DAYS = {
+  '1': { label: 'Day 1', date: '2026-11-13' },
+  '2': { label: 'Day 2', date: '2026-11-14' },
+};
+
 // The answers on the RSVP page (the form posts the key).
 const RSVP_ANSWERS = { yes: 'Yes', no: 'No' };
 
@@ -106,6 +155,8 @@ const RSVP_ANSWERS = { yes: 'Yes', no: 'No' };
 function setup() {
   const sheet = getSheet_();
   getQueueSheet_();
+  getAttendanceSheet_();
+  getFeedbackSheet_();
   const rsvp = getRsvpSheet_(true);
   rsvpToken_('setup'); // creates the signing secret before any link goes out
   setupFollowUps();
@@ -140,6 +191,8 @@ function doPost(e) {
   if (data.website) return json_({ ok: true });
 
   if (data.form === 'rsvp') return json_(handleRsvp_(data));
+  if (data.form === 'attendance') return json_(handleAttendance_(data));
+  if (data.form === 'feedback') return json_(handleFeedback_(data));
 
   const errors = validate_(data);
   if (errors.length) return json_({ ok: false, error: errors.join(' ') });
@@ -323,7 +376,7 @@ const REMINDERS = [
   { type: 'rsvp',    at: new Date('2026-11-06T09:00:00+02:00') }, // 7 days before: are you coming?
   { type: 'idea',    at: new Date('2026-11-09T09:00:00+02:00') }, // 4 days before; applications close
   { type: 'remind2', at: new Date('2026-11-11T09:00:00+02:00') }, // 2 days before
-  { type: 'day1',    at: new Date('2026-11-13T08:00:00+02:00') }, // morning of day 1 (kickoff 11:00)
+  { type: 'day1',    at: new Date('2026-11-13T08:00:00+02:00') }, // morning of day 1 (kickoff 09:30)
   { type: 'day2',    at: new Date('2026-11-14T08:00:00+02:00') }, // morning of day 2 (submissions 11:00)
 ];
 // A reminder that couldn't go out on time (e.g. the timer was off) is skipped after this long.
@@ -618,36 +671,152 @@ function testRsvpLink() {
   Logger.log(rsvpLink_(Session.getActiveUser().getEmail()));
 }
 
+// --- Attendance ---------------------------------------------------------------
+
+function getAttendanceSheet_() {
+  const ss = SpreadsheetApp.openById(CONFIG.SHEET_ID);
+  let sheet = ss.getSheetByName(CONFIG.ATTENDANCE_SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(CONFIG.ATTENDANCE_SHEET_NAME);
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(ATTENDANCE_COLUMNS.map(c => c.header));
+    sheet.getRange(1, 1, 1, ATTENDANCE_COLUMNS.length).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+/**
+ * Signs someone in for a day from attend.html. Anyone can sign in (team-mates may not have
+ * applied themselves); the Applied? and RSVP columns show who we already knew about.
+ */
+function handleAttendance_(d) {
+  const day = ATTENDANCE_DAYS[clean_(d.day)];
+  const name = clean_(d.name);
+  const email = clean_(d.email).toLowerCase();
+  if (!day) return { ok: false, error: 'This sign-in link is missing its day. Scan the QR code again.' };
+  if (!name) return { ok: false, error: 'Enter your full name.' };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: 'Enter a valid email address.' };
+  if (clean_(d.phone).replace(/\D/g, '').length < 9) return { ok: false, error: 'Enter a valid cell number.' };
+  if (!clean_(d.org)) return { ok: false, error: 'Enter your company or school.' };
+
+  const today = Utilities.formatDate(new Date(), 'Africa/Johannesburg', 'yyyy-MM-dd');
+  if (!CONFIG.ATTENDANCE_ANY_DAY && today !== day.date) {
+    return { ok: false, error: today < day.date
+      ? 'Sign-in for ' + day.label + ' opens on the day. See you then!'
+      : 'Sign-in for ' + day.label + ' has closed. If you were there, tell a Melsoft team member.' };
+  }
+
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(20000);
+  } catch (err) {
+    return { ok: false, error: 'The server is busy. Please try again in a moment.' };
+  }
+  try {
+    const sheet = getAttendanceSheet_();
+    const lastRow = sheet.getLastRow();
+    if (lastRow >= 2) {
+      const rows = sheet.getRange(2, 1, lastRow - 1, ATTENDANCE_COLUMNS.length).getValues();
+      const dayCol = ATTENDANCE_COLUMNS.findIndex(c => c.key === 'day');
+      const emailCol = ATTENDANCE_COLUMNS.findIndex(c => c.key === 'email');
+      const prev = rows.find(r => r[dayCol] === day.label && String(r[emailCol]).replace(/^'/, '').toLowerCase() === email);
+      if (prev) {
+        const at = Utilities.formatDate(new Date(prev[0]), 'Africa/Johannesburg', 'HH:mm');
+        return { ok: true, already: true, first: firstName_(name), at: at, day: day.label };
+      }
+    }
+    const person = findApplicant_(email);
+    const rsvp = rsvpAnswers_().get(email);
+    const now = new Date();
+    const rec = {
+      time:    now,
+      day:     day.label,
+      name:    name,
+      email:   email,
+      phone:   clean_(d.phone),
+      org:     clean_(d.org),
+      team:    clean_(d.team),
+      applied: person ? 'Yes' : 'No',
+      rsvp:    rsvp ? rsvp.coming : '',
+    };
+    sheet.appendRow(ATTENDANCE_COLUMNS.map(c => safeCell_(rec[c.key])));
+    return { ok: true, first: firstName_(name), at: Utilities.formatDate(now, 'Africa/Johannesburg', 'HH:mm'), day: day.label };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// --- Feedback -----------------------------------------------------------------
+
+function getFeedbackSheet_() {
+  const ss = SpreadsheetApp.openById(CONFIG.SHEET_ID);
+  let sheet = ss.getSheetByName(CONFIG.FEEDBACK_SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(CONFIG.FEEDBACK_SHEET_NAME);
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(FEEDBACK_COLUMNS.map(c => c.header));
+    sheet.getRange(1, 1, 1, FEEDBACK_COLUMNS.length).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+/** Saves one feedback answer from feedback.html. */
+function handleFeedback_(d) {
+  const rec = { time: new Date() };
+  for (const key of FEEDBACK_RATINGS) {
+    const v = clean_(d[key]);
+    if (v && !['1', '2', '3', '4', '5'].includes(v)) return { ok: false, error: 'Ratings go from 1 to 5.' };
+    rec[key] = v ? Number(v) : '';
+  }
+  if (!rec.overall) return { ok: false, error: 'Give Colleague Zero an overall rating from 1 to 5.' };
+  rec.best = clean_(d.best);
+  rec.better = clean_(d.better);
+  rec.again = ['Yes', 'Maybe', 'No'].includes(clean_(d.again)) ? clean_(d.again) : '';
+
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(20000);
+  } catch (err) {
+    return { ok: false, error: 'The server is busy. Please try again in a moment.' };
+  }
+  try {
+    getFeedbackSheet_().appendRow(FEEDBACK_COLUMNS.map(c => safeCell_(rec[c.key])));
+  } finally {
+    lock.releaseLock();
+  }
+  return { ok: true };
+}
+
 // --- Email content ------------------------------------------------------------
 
 // The event, as stated on the landing page. Times are SAST; online or in person is still open,
 // so nothing here names a place.
 const EVENT = {
-  kickoff: new Date('2026-11-13T11:00:00+02:00'),
+  kickoff: new Date('2026-11-13T09:30:00+02:00'),
   site: 'https://hackathon-26.melsoft.org/',
   // Calendar entries for both days (UTC; SAST is UTC+2).
   sessions: [
     {
       uid: 'colleague-zero-2026-day1@melsoft.org',
       title: 'Colleague Zero · Day 1',
-      start: '20261113T090000Z', end: '20261113T160000Z',
-      details: 'Kickoff at 11:00 SAST, idea pitches at 13:00, working demos at 17:00, then overnight hacking.',
+      start: '20261113T073000Z', end: '20261113T220000Z',
+      details: 'Opening at 09:30 SAST, idea pitches at 12:30, mentor sessions from 14:30, progress check-in survey at 20:30, Loom progress reports by midnight.',
     },
     {
       uid: 'colleague-zero-2026-day2@melsoft.org',
       title: 'Colleague Zero · Day 2',
-      start: '20261114T090000Z', end: '20261114T113000Z',
-      details: 'Projects submitted at 11:00 SAST, live presentations at 12:00, winner announced at 13:00.',
+      start: '20261114T070000Z', end: '20261114T120000Z',
+      details: 'Check-in at 09:00 SAST, projects submitted at 11:00, final presentations at 12:00, winner announced at 14:00.',
     },
   ],
   days: [
     {
       day: 'Friday 13 November',
-      items: [['11:00', 'Welcome and kickoff'], ['13:00', 'Idea pitches'], ['17:00', 'Working demos'], ['18:00', 'Overnight hacking']],
+      items: [['09:30', 'Opening and welcome'], ['12:30', 'Idea pitches'], ['14:30', 'Development and mentor sessions'], ['20:30', 'Progress check-in survey'], ['00:00', 'Loom progress reports']],
     },
     {
       day: 'Saturday 14 November',
-      items: [['11:00', 'Project submission'], ['12:00', 'Live presentations'], ['13:00', 'Winner announced: R10 000']],
+      items: [['09:00', 'Arrival and check-in'], ['11:00', 'Project submission'], ['12:00', 'Final presentations'], ['14:00', 'Winner announced: R10 000']],
     },
   ],
   phone: '010 158 4346',
@@ -917,24 +1086,24 @@ function reminderEmail_(r, kind) {
     };
   } else if (kind === 'day1') {
     e = {
-      subject: 'Today’s the day: Colleague Zero kicks off at 11:00',
-      preview: 'Kickoff is at 11:00 SAST. Here’s today’s plan.',
+      subject: 'Today’s the day: Colleague Zero kicks off at 09:30',
+      preview: 'Kickoff is at 09:30 SAST. Here’s today’s plan.',
       eyebrow: 'Day 1 · Friday 13 November',
       heading: 'Today’s the day, ' + esc(first) + '!',
-      intro: 'Colleague Zero kicks off at <strong style="color:#0a1733">11:00 SAST</strong>.',
-      introText: 'Colleague Zero kicks off at 11:00 SAST.',
-      more: 'Pitch your idea at 13:00 and show your agents running at 17:00, even if they’re rough.',
+      intro: 'Colleague Zero kicks off at <strong style="color:#0a1733">09:30 SAST</strong>.',
+      introText: 'Colleague Zero kicks off at 09:30 SAST.',
+      more: 'Pitch your idea at 12:30, use the mentor sessions from 14:30, complete the progress check-in survey at 20:30 and send your Loom report by midnight.',
       days: [EVENT.days[0]], join: 'Join the kickoff',
     };
   } else if (kind === 'day2') {
     e = {
       subject: 'Final day: submissions close at 11:00',
-      preview: 'Submit by 11:00, present at 12:00, winner at 13:00.',
+      preview: 'Submit by 11:00, present at 12:00, winner at 14:00.',
       eyebrow: 'Day 2 · Saturday 14 November',
       heading: 'Final day, ' + esc(first) + '. Let’s see it working.',
       intro: 'Submit your project by <strong style="color:#0a1733">11:00 SAST</strong>, ' +
-        'live presentations start at <strong style="color:#0a1733">12:00</strong> and the winner is announced at <strong style="color:#0a1733">13:00</strong>.',
-      introText: 'Submit your project by 11:00 SAST, live presentations start at 12:00 and the winner is announced at 13:00.',
+        'final presentations start at <strong style="color:#0a1733">12:00</strong> and the winner is announced at <strong style="color:#0a1733">14:00</strong>.',
+      introText: 'Submit your project by 11:00 SAST, final presentations start at 12:00 and the winner is announced at 14:00.',
       more: 'You’ve built something real. We can’t wait to see it.',
       days: [EVENT.days[1]], join: 'Join the presentations',
     };

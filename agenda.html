@@ -8,13 +8,13 @@
 <link rel="canonical" href="https://hackathon-26.melsoft.org/agenda.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Agenda · Colleague Zero">
-<meta property="og:description" content="Friday online, Saturday in person in Rosebank. Kickoff Friday 13 November at 09:00 SAST.">
+<meta property="og:description" content="Friday online, Saturday in person in Rosebank. Kickoff Friday 13 November at 09:30 SAST.">
 <meta property="og:image" content="https://hackathon-26.melsoft.org/og.png">
 <link rel="icon" type="image/webp" href="Icon-40.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="site.css?v=20261107a">
+<link rel="stylesheet" href="site.css?v=20261112g">
 <script src="site.js?v=20261106h" defer></script>
 <style>
   /* ── Choose a day ───────────────────────────────────────────────────── */
@@ -44,7 +44,7 @@
   .chosen-label { display: block; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #eab0d4; }
   .chosen-date { display: block; margin-top: 3px; font-size: 18px; font-weight: 700; letter-spacing: -.02em; }
 
-  .swap { cursor: pointer; min-height: 44px; padding: 0 18px; font-size: 15px; }
+  .swap { flex: none; white-space: nowrap; cursor: pointer; min-height: 44px; padding: 0 18px; font-size: 15px; }
   .swap svg { flex: none; }
 
   .notice {
@@ -153,6 +153,7 @@
 
 <header class="cz-mhead">
 <a class="cz-mhead-logo" href="index.html" aria-label="Melsoft Academy, Colleague Zero home"><img src="assets/melsoft-academy-navy.webp" alt="Melsoft Academy" width="102" height="40"></a>
+<a class="cz-btn cz-btn-primary" href="https://colleague-zero.melsoft.org/" style="min-height: 40px; padding: 0 18px; font-size: 14px">Dashboard</a>
 </header>
 <header class="cz-nav" style="position: fixed; top: 16px; left: 0; right: 0; z-index: 100; pointer-events: none">
 <div class="cz-wrap">
@@ -161,40 +162,27 @@
 <img src="assets/melsoft-logo.svg" alt="Melsoft Academy" style="display: block; height: 32px; width: auto">
 </a>
 <nav aria-label="Main" style="display: flex; align-items: center; gap: 28px; flex-wrap: wrap">
-<a class="cz-link cz-hide-sm" href="index.html">Home</a>
 <a class="cz-link cz-hide-sm" href="agenda.html" aria-current="page">Agenda</a>
 <a class="cz-link cz-hide-sm" href="judges.html">Judges</a>
-<a class="cz-link cz-hide-sm" href="needed.html">What’s needed</a>
-<a class="cz-btn cz-btn-primary" href="index.html#apply" style="min-height: 48px; padding: 0 22px; font-size: 15px">Apply now</a>
+<a class="cz-link cz-hide-sm" href="attend.html">Attendance</a>
+<a class="cz-link cz-hide-sm" href="feedback.html">Feedback</a>
+<a class="cz-btn cz-btn-primary" href="https://colleague-zero.melsoft.org/" style="min-height: 48px; padding: 0 22px; font-size: 15px">Dashboard</a>
 </nav>
 </div>
 </div>
 </header>
 <nav class="cz-tabbar" aria-label="Pages">
-<a href="index.html"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.6 12 4l8.5 6.6"/><path d="M5.6 9v9.4c0 .9.7 1.6 1.6 1.6h9.6c.9 0 1.6-.7 1.6-1.6V9"/><path d="M10 20v-5.2h4V20"/></svg><b>Home</b></a>
 <a href="agenda.html" aria-current="page"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3.2"/><path d="M3 10.2h18M8 3v4M16 3v4"/><path d="M7.4 14h4.2M7.4 17.4h7.2"/></svg><b>Agenda</b></a>
 <a href="judges.html"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9.2" cy="8.2" r="3.3"/><path d="M3.4 19.4c0-3.1 2.6-5.2 5.8-5.2s5.8 2.1 5.8 5.2"/><path d="M16.1 5.5a3.3 3.3 0 0 1 0 5.9"/><path d="M17.6 14.7c2 .7 3.3 2.4 3.3 4.7"/></svg><b>Judges</b></a>
-<a href="needed.html"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3.8" width="16" height="16.4" rx="3.4"/><path d="m7.6 9.4 1.6 1.6 2.8-3"/><path d="M14 9.6h2.6"/><path d="m7.6 15 1.6 1.6 2.8-3"/><path d="M14 15.2h2.6"/></svg><b>What’s needed</b></a>
+<a href="attend.html"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.2V6.4A2.4 2.4 0 0 1 6.4 4h1.8"/><path d="M15.8 4h1.8A2.4 2.4 0 0 1 20 6.4v1.8"/><path d="M20 15.8v1.8a2.4 2.4 0 0 1-2.4 2.4h-1.8"/><path d="M8.2 20H6.4A2.4 2.4 0 0 1 4 17.6v-1.8"/><path d="m8.4 12.2 2.4 2.4 4.8-5"/></svg><b>Attendance</b></a>
+<a href="feedback.html"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 15.2a2.4 2.4 0 0 1-2.4 2.4H9l-4.6 3.6V6.4A2.4 2.4 0 0 1 6.8 4h10.8A2.4 2.4 0 0 1 20 6.4z"/><path d="m12.2 7.6.95 1.95 2.15.3-1.55 1.5.37 2.13-1.92-1-1.92 1 .37-2.13-1.55-1.5 2.15-.3z"/></svg><b>Feedback</b></a>
 </nav>
 
 <div class="page">
 
-<section class="page-head cz-grid-bg">
+<section class="band-section page-top" id="days">
 <div class="cz-wrap">
-<span class="cz-mono eyebrow">Colleague Zero · Agenda</span>
-<h1>Two days. <span>One finished colleague.</span></h1>
-<p class="lede">Friday is online, so you can join from anywhere in South Africa. Saturday is in person at WeWork The Link, 173 Oxford Rd, Rosebank. Pick a day to see every session. During the event, this page shows what’s on now.</p>
-<div class="facts">
-<div><i class="cz-mono">Kickoff</i><b>Fri 13 Nov · 09:00 SAST</b></div>
-<div><i class="cz-mono">Presentations</i><b>Sat 14 Nov · 12:00</b></div>
-<div><i class="cz-mono">Where</i><b>Online, then Rosebank</b></div>
-<div><i class="cz-mono">Prize</i><b>R10 000</b></div>
-</div>
-</div>
-</section>
-
-<section class="band-section" id="days">
-<div class="cz-wrap">
+<h1 class="sr-only">Agenda</h1>
 
 <div id="dayPanel">
 <div class="sec-head">
@@ -204,7 +192,7 @@
 <div class="daypick">
 <button type="button" class="daycard cz-card" data-day="day1">
 <span class="top"><span><span class="cz-mono label">Day 1</span><h3>Friday 13 November</h3></span><span class="pill">Online</span></span>
-<p>Opening, ideation, idea pitches, development and progress updates, then Loom reports at midnight.</p>
+<p>Opening, ideation, idea pitches, development with mentors and a progress check-in, then Loom reports at midnight.</p>
 <span class="go">See day one <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
 </button>
 <button type="button" class="daycard cz-card" data-day="day2">
@@ -269,7 +257,7 @@
 <h2 class="cz-foot-h">Key dates</h2>
 <ul class="cz-foot-dates">
 <li><span class="cz-mono when">Mon 9 Nov</span><span class="what">Applications close</span></li>
-<li><span class="cz-mono when">Fri 13 Nov · 09:00</span><span class="what">Kickoff, online</span></li>
+<li><span class="cz-mono when">Fri 13 Nov · 09:30</span><span class="what">Kickoff, online</span></li>
 <li><span class="cz-mono when">Sat 14 Nov · 12:00</span><span class="what">Final presentations in Rosebank</span></li>
 <li><span class="cz-mono when">Sat 14 Nov · 14:00</span><span class="what">Winner announced: R10 000</span></li>
 </ul>
@@ -315,20 +303,20 @@
       long: "Friday 13 November",
       where: "Online",
       title: "Ideation, planning and development",
-      focus: "Meet the challenge, choose the education problem your digital colleague will solve, pitch it to the judges, build, show your progress at 20:00 and send your Loom report by midnight.",
+      focus: "Meet the challenge, choose the education problem your digital colleague will solve, pitch your idea, build with mentors on hand, complete the progress check-in survey at 20:30 and send your Loom report by midnight.",
       blocks: [
         { t: "session", n: "Part one", title: "Opening and setup", note: "Online. We email your join link before the day." },
-        { t: "item", s: "09:00", e: "09:30", title: "Opening and welcome", who: "Every team", p: "Housekeeping, introduction of judges, challenge topics, judging criteria and submission process." },
-        { t: "item", s: "09:30", e: "10:00", title: "Team setup and preparation", who: "Every team", p: "Team alignment, role allocation and development environment setup." },
+        { t: "item", s: "09:30", e: "10:00", title: "Opening and welcome", who: "Every team", p: "Housekeeping, introduction of judges, challenge topics, judging criteria and submission process." },
+        { t: "item", s: "10:00", e: "10:30", title: "Team setup and preparation", who: "Every team", p: "Team alignment, role allocation and development environment setup." },
         { t: "session", n: "Part two", title: "Ideation and idea pitches" },
-        { t: "item", s: "10:00", e: "12:00", kind: "build", title: "Hacking part 1: ideation and planning", p: "Teams select their EdTech problems, plan their autonomous agents and prepare short idea pitches." },
-        { t: "item", s: "12:00", e: "14:00", title: "Presentation 1: idea pitches", who: "Team leads", p: "Team leads present their ideas on behalf of their teams. Judges provide initial feedback." },
-        { t: "session", n: "Part three", title: "Development and progress updates" },
-        { t: "item", s: "14:00", e: "17:00", kind: "build", title: "Hacking part 2: development", p: "Development begins. Mentor check-ins, technical guidance and troubleshooting." },
-        { t: "item", s: "17:00", e: "20:00", kind: "build", title: "Continued development", p: "Teams continue building and refining their solutions." },
-        { t: "item", s: "20:00", e: "21:00", title: "Presentation 2: progress updates", who: "Every team", p: "Teams present their progress, demonstrate completed functionality, highlight challenges and outline their next steps." },
+        { t: "item", s: "10:30", e: "12:30", kind: "build", title: "Hacking part 1: ideation and planning", p: "Teams select their EdTech problems, plan their autonomous agents and prepare short idea pitches." },
+        { t: "item", s: "12:30", e: "14:30", title: "Presentation 1: idea pitches", who: "One person per team", p: "One representative per team pitches the team’s idea live, followed by questions from the host." },
+        { t: "session", n: "Part three", title: "Development and mentor sessions", note: "Mentors run sessions alongside development, so you don’t stop building to join one. We’ll remind you before each session." },
+        { t: "item", s: "14:30", e: "17:30", kind: "build", title: "Hacking part 2: development", p: "Development begins, with mentor sessions running alongside: technical guidance, troubleshooting and check-ins." },
+        { t: "item", s: "17:30", e: "20:30", kind: "build", title: "Continued development", p: "Teams continue building and refining their solutions. Additional mentor slots from 18:30 to 20:30, subject to each mentor’s availability." },
+        { t: "item", s: "20:30", e: "21:30", title: "Progress check-in survey", who: "Every team", p: "Each team completes a short check-in survey on progress made, functionality completed, challenges faced and next steps." },
         { t: "session", n: "Part four", title: "Late build and Loom reports" },
-        { t: "item", s: "21:00", e: "00:00", kind: "build", title: "Continued hacking", p: "Teams continue development, address feedback and work towards their milestones." },
+        { t: "item", s: "21:30", e: "00:00", kind: "build", title: "Continued hacking", p: "Teams continue development, address feedback and work towards their milestones." },
         { t: "item", s: "00:00", nextDay: true, title: "Midnight submission: Loom progress reports", who: "Every participant", p: "All participants submit Loom recordings reporting on their individual or team progress, work completed and outstanding tasks.", link: { href: "needed.html#submit", text: "What to submit" } }
       ]
     },
@@ -345,7 +333,7 @@
         { t: "item", s: "09:00", e: "09:15", title: "Arrival and check-in", who: "Every participant", p: "Participant check-in and preparation." },
         { t: "item", s: "09:15", e: "12:00", kind: "build", title: "Deployment and testing", p: "Final development, deployment, testing, debugging and solution refinement." },
         { t: "item", s: "11:00", title: "Project submission", who: "Every team", p: "Projects close at 11:00.", link: { href: "needed.html#submit", text: "What to submit" } },
-        { t: "item", s: "12:00", e: "13:00", title: "Final presentations", who: "Every team", p: "Teams demonstrate their autonomous agents and present their solutions to the judges.", judges: true },
+        { t: "item", s: "12:00", e: "13:00", title: "Presentation 2: final presentations", who: "Every team", p: "Teams demonstrate their autonomous agents and present their solutions to the judges.", judges: true },
         { t: "item", s: "13:00", e: "14:00", title: "Judges’ deliberation", p: "Evaluation of submissions and selection of the winning team." },
         { t: "item", s: "14:00", kind: "close", title: "Winner announcement and closing", p: "Announcement of winners, recognition of participants and closing remarks. The winner takes home R10 000." }
       ]
@@ -494,7 +482,7 @@
 
   // ── Live state: what's on now, and what's next ───────────────────────
 
-  var KICKOFF = at("2026-11-13", "09:00");
+  var KICKOFF = at("2026-11-13", "09:30");
   var ALL = [];
   DAYS.forEach(function (d) { d.blocks.forEach(function (b) { if (b.t === "item") { b.day = d; ALL.push(b); } }); });
   var END = ALL[ALL.length - 1].end;
@@ -524,7 +512,7 @@
       notice.appendChild(el("span", "chip cz-mono", "Coming up"));
       var s = el("span");
       s.appendChild(el("strong", null, days > 1 ? "Kickoff in " + days + " days." : "Kickoff is tomorrow."));
-      s.appendChild(document.createTextNode(" Friday 13 November at 09:00 SAST."));
+      s.appendChild(document.createTextNode(" Friday 13 November at 09:30 SAST."));
       notice.appendChild(s);
       return;
     }

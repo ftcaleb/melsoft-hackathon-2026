@@ -243,7 +243,7 @@ section[id]{scroll-margin-top:110px}
 .cz-jb-label{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 14px;padding:16px 24px}
 .cz-jb-label .cz-jb-count{order:3;margin:0 0 0 auto;padding:0;font-size:15px;font-weight:700;letter-spacing:0;color:#ffffff;-webkit-text-stroke:0}
 .cz-jb-judges{grid-row:auto}
-.cz-jb-day{grid-column:1/-1}
+.cz-jb-day{grid-column:1/-1;order:-1}
 }
 @media (max-width: 600px){
 .cz-jb{grid-template-columns:minmax(0,1fr)}
@@ -332,7 +332,25 @@ body.bio-open{overflow:hidden}
 .cz-tabbar{left:8px;right:8px;padding:6px;gap:2px}
 .cz-tabbar a{padding-inline:2px}
 }
+@media (max-width: 400px){
+.cz-tabbar b{font-size:10px}
+}
 @media print{.cz-tabbar{display:none}}
+/* Narrow desktops and tablets: tighter navbar so the four links and Dashboard stay on one line. */
+@media (min-width: 761px) and (max-width: 960px){
+.cz-nav .cz-bar{padding-left:22px !important}
+.cz-nav nav{gap:18px !important}
+.cz-nav .cz-bar img{height:28px !important}
+}
+/* Phones: the footer keeps only the partners and the social links. */
+@media (max-width: 760px){
+.cz-foot-cta,.cz-foot-bottom,.cz-foot-grid>div:not(.cz-foot-brand),.cz-foot-brand>a,.cz-foot-brand>p{display:none !important}
+.cz-foot .cz-wrap{display:flex;flex-direction:column;align-items:center;gap:24px;padding-top:36px;text-align:center}
+.cz-foot-partners{order:1;justify-content:center;gap:16px 28px;margin-top:0 !important;padding-top:0 !important;border-top:0 !important}
+.cz-foot-partners .cz-foot-h{flex-basis:100%}
+.cz-foot-grid{order:2;display:block;width:100%;padding-top:24px;border-top:1px solid rgba(255,255,255,.1)}
+.cz-foot-social{justify-content:center;margin-top:0}
+}
 
 /* Phones: the floating navbar gives way to the slim header below and the bottom tab bar. */
 @media (max-width: 760px){
@@ -345,7 +363,7 @@ section[id]{scroll-margin-top:80px}
    floating navbar is hidden at this width and the tab bar carries the page links. */
 .cz-mhead{display:none}
 @media (max-width: 760px){
-.cz-mhead{display:flex;align-items:center;justify-content:center;height:64px;position:sticky;top:0;z-index:95;background:#ffffff;border-bottom:1px solid #e3e8f2}
+.cz-mhead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px;height:64px;position:sticky;top:0;z-index:95;background:#ffffff;border-bottom:1px solid #e3e8f2}
 .cz-mhead-logo{display:flex}
 .cz-mhead-logo img{display:block;height:40px;width:auto}
 }
@@ -359,6 +377,13 @@ section[id]{scroll-margin-top:80px}
 @media (max-width: 760px){
 .page-head{padding-top:clamp(28px,7vw,44px)}
 }
+/* Pages without a head (agenda, judges): the first section clears the floating navbar itself. */
+.page>.page-top{padding-top:calc(104px + clamp(16px,3vw,40px))}
+@media (max-width: 760px){
+.page>.page-top{padding-top:clamp(28px,7vw,44px)}
+}
+/* Read by screen readers, not shown. */
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 /* Dark version (rsvp.html): midnight navy with a faint light grid and dark glass facts,
    matching the judges band. */
 .page-head-dark{background:#070f24}

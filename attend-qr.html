@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attendance QR codes · Colleague Zero</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/webp" href="Icon-40.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  /* Printable posters: one A4 page per day. Open, then print (or show full screen on the day). */
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, Arial, sans-serif; color: #0a1733; background: #e9edf5; }
+  .tools { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; padding: 20px 16px; }
+  .tools a, .tools button { min-height: 44px; padding: 0 20px; border: 1px solid #cdd5e5; border-radius: 999px; background: #ffffff; font: 600 15px Inter, sans-serif; color: #0a1733; text-decoration: none; display: inline-flex; align-items: center; cursor: pointer; }
+  .tools button { background: #5e0743; border-color: #5e0743; color: #ffffff; }
+  .poster { width: min(210mm, 100%); aspect-ratio: 210 / 297; margin: 0 auto 24px; padding: 14mm 16mm; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; background: #ffffff; box-shadow: 0 20px 40px -28px rgba(10,23,51,.5); }
+  .poster header img { height: 15mm; width: auto; }
+  .eyebrow { margin: 0 0 3mm; font: 500 12pt "JetBrains Mono", monospace; letter-spacing: .16em; text-transform: uppercase; color: #5e0743; }
+  h1 { margin: 0; font-size: 44pt; line-height: 1; letter-spacing: -.03em; font-weight: 800; }
+  .sub { margin: 4mm 0 0; font-size: 15pt; color: #34405e; }
+  .qr { width: 118mm; max-width: 100%; padding: 4mm; border: 2px solid #0a1733; border-radius: 8mm; }
+  .qr img { display: block; width: 100%; height: auto; }
+  .steps { margin: 0; font-size: 14pt; line-height: 1.5; color: #34405e; }
+  .steps b { color: #0a1733; }
+  .url { margin: 2mm 0 0; font: 500 10pt "JetBrains Mono", monospace; color: #4a5675; word-break: break-all; }
+  @media print {
+    body { background: #ffffff; }
+    .tools { display: none; }
+    .poster { width: 210mm; height: 297mm; margin: 0; box-shadow: none; page-break-after: always; break-after: page; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tools">
+<button type="button" onclick="window.print()">Print both posters</button>
+<a href="assets/qr/attend-day-1.png" download>Day 1 QR (PNG)</a>
+<a href="assets/qr/attend-day-2.png" download>Day 2 QR (PNG)</a>
+</div>
+
+<section class="poster">
+<header><img src="assets/melsoft-academy-navy.webp" alt="Melsoft Academy"></header>
+<div>
+<p class="eyebrow">Colleague Zero · Day 1</p>
+<h1>Scan to sign in</h1>
+<p class="sub">Friday 13 November · Online</p>
+</div>
+<div class="qr"><img src="assets/qr/attend-day-1.svg" alt="QR code for day 1 attendance"></div>
+<div>
+<p class="steps"><b>Open your camera, scan the code</b> and add your details.<br>Everyone signs in on their own phone.</p>
+<p class="url">hackathon-26.melsoft.org/attend.html?day=1</p>
+</div>
+</section>
+
+<section class="poster">
+<header><img src="assets/melsoft-academy-navy.webp" alt="Melsoft Academy"></header>
+<div>
+<p class="eyebrow">Colleague Zero · Day 2</p>
+<h1>Scan to sign in</h1>
+<p class="sub">Saturday 14 November · WeWork The Link, Rosebank</p>
+</div>
+<div class="qr"><img src="assets/qr/attend-day-2.svg" alt="QR code for day 2 attendance"></div>
+<div>
+<p class="steps"><b>Open your camera, scan the code</b> and add your details.<br>Everyone signs in on their own phone.</p>
+<p class="url">hackathon-26.melsoft.org/attend.html?day=2</p>
+</div>
+</section>
+
+</body>
+</html>
